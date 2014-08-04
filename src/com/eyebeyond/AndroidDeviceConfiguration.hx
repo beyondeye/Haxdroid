@@ -48,7 +48,7 @@ class AndroidDeviceConfiguration
 		{name:"KeyboardAvailability", regex: "^(keysexposed)|(keyshidden)|(keyssoft)-" },
 		{name:"PrimaryTextInputMethod", regex: "^(nokeys)|(qwerty)|(12key)-" },
 		{name:"NavigationKeyAvailability", regex: "^(navexposed)|(navhidden)-" },
-		{name:"PrimaryNonTouchNavigationMethod", regex: "^(nonav)|(dpad))|(trackball)|(wheel)-" },
+		{name:"PrimaryNonTouchNavigationMethod", regex: "^(nonav)|(dpad)|(trackball)|(wheel)-" },
 		{name:"APILevel", regex: "^v[0-9]+-" } //Examples: v3 v4 v9	
 		];	
 	private static var screenPixelDensityStr = [ "nodpi","ldpi", "mdpi","tvdpi", "hdpi", "xhdpi" ];
