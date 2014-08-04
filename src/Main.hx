@@ -12,16 +12,18 @@ import haxe.ui.toolkit.core.Macros;
 import haxe.ui.toolkit.style.StyleManager;
 import haxe.ui.toolkit.style.Style;
 
-
 import com.eyebeyond.AndroidResourceLoader;
 import com.eyebeyond.AndroidXMLConverter;
+import com.eyebeyond.AndroidDeviceConfiguration;
+import openfl.Assets;
+
 class Main {
     public static function main() {
 		testConvertButton();
 	}
 
 	static private function testConvertButton():Void 
-	{
+	{		
 		Toolkit.theme = new GradientTheme();
 		Toolkit.init(); //initialize HaxeUI
 		
@@ -29,11 +31,16 @@ class Main {
 		//basically, the meaning of this is initialize main activity
         Toolkit.openFullscreen(function(root:Root) {
 			var resloader = new AndroidResourceLoader();
+			resloader.androidDeviceConfiguration.setConfigurationForDesktopPC();
+			var img = resloader.getDrawable("arrow_left");
+			resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "es");
+			var hellostring = resloader.getString("hello");
 			var androidxml = resloader.getLayout("onebutton.xml");
 			//..parse each object, 
 			//..create an xml element for each converted object
 			//serialize to file
-
+//			var thepath = openfl.Assets.getPath("strings.xml");
+//			trace(thepath);
 			var converter = new AndroidXMLConverter(resloader);
  			var convertedxml = converter.processXml(androidxml);
 			trace(convertedxml);
