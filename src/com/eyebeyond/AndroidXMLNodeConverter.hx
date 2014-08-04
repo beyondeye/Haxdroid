@@ -178,13 +178,16 @@ class AndroidXMLNodeConverter
 		return res;			
 	}
 		
-	function resolveAndroidStringResource(astr:String):String
+	function resolveAndroidStringResource(inputStr:String):String
 	{
-		//TODO perhaps I should use direct string operations instead of REGEX  for better performance
+		var res:String = inputStr;
 		var rgx = ~/^@string\//; //string resource id syntax: "@string/mystringid"
-		if (!rgx.match(astr)) return astr; //literal string, not reference to string resource, 
-		var stringId = rgx.matchedRight();
-		return _resloader.getString(stringId);
+		while (rgx.match(res))
+		{ //resource id reference found
+			var stringId = rgx.matchedRight();
+			res = _resloader.getString(stringId); 
+		} //loop until the resolved string is a literal string, not a reference to another string resource
+		return res;
 	}
 
 

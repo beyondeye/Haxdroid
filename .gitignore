@@ -1,1 +1,8 @@
 openfl-readme.txt
+bin/flash/bin/AndroidXmlToHaxeUI.swf
+bin/flash/haxe/ApplicationMain.hx
+bin/flash/haxe/debug.hxml
+bin/flash/haxe/DefaultAssetLibrary.hx
+bin/flash/haxe/final.hxml
+bin/flash/haxe/NMEPreloader.hx
+bin/flash/haxe/release.hxml
