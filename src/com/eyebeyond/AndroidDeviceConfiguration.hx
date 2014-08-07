@@ -51,21 +51,12 @@ class AndroidDeviceConfiguration
 		{name:"PrimaryNonTouchNavigationMethod", regex: "^(nonav)|(dpad)|(trackball)|(wheel)-" },
 		{name:"APILevel", regex: "^v[0-9]+-" } //Examples: v3 v4 v9	
 		];	
-	private static var screenPixelDensityStr = [ "nodpi","ldpi", "mdpi","tvdpi", "hdpi", "xhdpi" ];
-	public function new() 
-	{
-		reset();
-	}
-	@:allow(AndroidResourceLoader.new)
-	public function registerHandlerSignalConfigurationChanged(handler:Void->Void)
-	{
-		_signalConfigurationChanged = handler;
-	}
-	public function reset():Void
-	{
-		_requestedConfigQualifierValues = [for (i in 0..._qualifiers.length) ""]; //fill with empty string: no configuration selected
-		dispatchSignalConfigurationChanged();
-	}
+		
+	// ordered values ScreenPixelDensity, for lowest to highest.
+	// IMPORTANT: The algorithm used to match requested pixel density is based on the
+	// assumption that that values in this array are ordered this way
+	private static var screenPixelDensityStr = [ "nodpi", "ldpi", "mdpi", "tvdpi", "hdpi", "xhdpi" ];
+	
 	/**
 	 * Set Android device configuration to something similar to a desktop pc
 	 */
@@ -84,11 +75,29 @@ class AndroidDeviceConfiguration
 		setConfiguration("NavigationKeyAvailability", "navhidden");
 		setConfiguration("PrimaryNonTouchNavigationMethod", "trackball");
 	}
+	
+	public function new() 
+	{
+		reset();
+	}
+
+	public function reset():Void
+	{
+		_requestedConfigQualifierValues = [for (i in 0..._qualifiers.length) ""]; //fill with empty string: no configuration selected
+		dispatchSignalConfigurationChanged();
+	}
+	
+	@:allow(com.eyebeyond.AndroidResourceLoader.new)
+	private function registerHandlerSignalConfigurationChanged(handler:Void->Void)
+	{
+		_signalConfigurationChanged = handler;
+	}	
 	private function dispatchSignalConfigurationChanged():Void
 	{
 		if (_signalConfigurationChanged != null) _signalConfigurationChanged();
 	}
-	
+		
+
 	/**
 	 * 
 	 * @param	qualifierName
@@ -97,7 +106,7 @@ class AndroidDeviceConfiguration
 	 */
 	public function setConfiguration(qualifierName:String, qualifierValue_:String):Bool
 	{
-		var qidx = findQualifierName(qualifierName);
+		var qidx = findConfigQualifierIndex(qualifierName);
 		if (qidx < 0) 
 		{
 			trace ('Error:android configuration qualifier name ${qualifierName} unknown');
@@ -125,8 +134,8 @@ class AndroidDeviceConfiguration
 	 * Full name of the resource, including resource qualifiers, (for example" "drawable-ldpi", "drawable-xhdpi", etc.)
 	 * @return
 	 */
-	@:allow(AndroidResourceLoader.getAllCompatibleResources)	
-	public function isCompatibleResource(resourceType:String, resourceNameWithConfigQualifiers_:String):Bool
+	@:allow(com.eyebeyond.AndroidResourceLoader.getAllCompatibleResources)	
+	private function isCompatibleResource(resourceType:String, resourceNameWithConfigQualifiers_:String):Bool
 	{
 		var resourceNameWithConfigQualifiers = resourceNameWithConfigQualifiers_.toLowerCase();
 		var qualifiersStartIdx = resourceNameWithConfigQualifiers.indexOf(resourceType)+resourceType.length;
@@ -154,7 +163,7 @@ class AndroidDeviceConfiguration
 			var matchedQualIdx:Int = -1;
 			for (cur in curQualifierIdx..._qualifiers.length)
 			{
-				var rgx = new EReg(_qualifiers[cur].regex, 'i');
+				var rgx = new EReg(_qualifiers[cur].regex, 'i'); //case insensitive match for resource paths
 				if (rgx.match(curQualifierString))
 				{
 					matchedQualIdx = cur;
@@ -176,7 +185,16 @@ class AndroidDeviceConfiguration
 		
 		
 	}
-	private function findQualifierName(qualifierName:String): Int
+	
+	/**
+	 * Remove last character from string
+	 */
+	private static inline function trimLast(s:String):String
+	{
+		return  s.substr(0, s.length - 1); //remove '-' at end
+	}
+	
+	private function findConfigQualifierIndex(qualifierName:String): Int
 	{
 		if (qualifierName == null) return -1;
 		for (i in 0..._qualifiers.length)
@@ -187,34 +205,23 @@ class AndroidDeviceConfiguration
 	}
 	/**
 	 * Return distance>0 if density higher that densityBase
-	 * @param	density
-	 * @param	densityBase
-	 * @return
-	 */
+	 **/
 	private function calcPixelDensityDistance(density:String, densityBase:String):Int
 	{
 		var base_d = screenPixelDensityStr.indexOf(densityBase);
 		var d = screenPixelDensityStr.indexOf(density);
 		return d - base_d;
 	}
+	
 	/**
-	 * The following function implement the algorithm used by android to select the best matching resource between all resources that satisfy
-	 * the current device configuration. The algorithm is described in http://developer.android.com/guide/topics/resources/providing-resources.html#BestMatch
-	 * 1.  Pick the (next) highest-precedence configuration qualifier in the list. (Start with MCC, then move down.)
-	 * 2.Do any of the resource directories include this qualifier?
-	 *		-If No, return to step 1 and look at the next qualifier.
-     *		-If Yes, continue to step 3. 
-	 * 3.Eliminate resource directories that do not include this qualifier. EXCEPTION:  If the qualifier in question is screen pixel density, Android selects the option that most closely matches the device screen density. In general, Android prefers scaling down a larger original image to scaling up a smaller original image
-	 * 4.Go back and repeat steps 1, 2, and 3 until only one directory remains.  
+	 * Extract resource config qualifiers from full resource path+resource name
+	 * TODO use regex instead of string functions here?
 	 */
-	@:allow(AndroidResourceLoader.getResourcePath)
-	public function findBestMatchingResource(compatibleResources:Array<String>, resourceType:String, resourceName:String):String
+	function extractResourceConfigQualifiers(resourcePaths:Array<String>,resourceType:String):Array<String> 
 	{
-		//first extract config qualifier substring
-		var compatibleResourcesQualifiers = new  Array<String>();
-		var rtlenp1 = resourceType.length+1;
-		
-		for (res in compatibleResources)
+		var configQualifiers = new Array<String>();
+		var rtlenp1 = resourceType.length+1;		
+		for (res in resourcePaths)
 		{
 			var lastidx = res.indexOf('/');
 			var resq = 
@@ -224,94 +231,141 @@ class AndroidDeviceConfiguration
 				else
 					res.substring(rtlenp1, lastidx) +'-';
 			}
-			compatibleResourcesQualifiers.push(resq);
+			configQualifiers.push(resq);
 		}
-		var remainingidxs = [for (i in 0...compatibleResources.length) i]; 
+		return configQualifiers;
 		
+	}
+
+	/**
+	 * The following function implement the algorithm used by android to select 
+	 * the best matching resource between all resources that satisfy
+	 * the current device configuration.
+	 * The algorithm is described in http://developer.android.com/guide/topics/resources/providing-resources.html#BestMatch
+	 * 1.  Pick the (next) highest-precedence configuration qualifier in the list. (Start with MCC, then move down.)
+	 * 2.Do any of the resource directories include this qualifier?
+	 *		-If No, return to step 1 and look at the next qualifier.
+     *		-If Yes, continue to step 3. 
+	 * 3.Eliminate resource directories that do not include this qualifier. 
+	 *        EXCEPTION:  If the qualifier in question is screen pixel density, Android selects the option that most 
+	 *                    closely matches the device screen density. 
+	 *                    In general, Android prefers scaling down a larger original image to scaling up a smaller original image
+	 * 4.Go back and repeat steps 1, 2, and 3 until only one directory remains.  
+	 */
+	@:allow(com.eyebeyond.AndroidResourceLoader.getResourcePath)
+	private function findBestMatchingResource(compatibleResources:Array<String>, resourceType:String, resourceName:String):String
+	{
+		//first extract config qualifier substring
+		var compatibleResourcesConfigQualifiers = extractResourceConfigQualifiers(compatibleResources,resourceType);
+
+		var remainingIdxs = [for (i in 0...compatibleResources.length) i]; 
+		
+		// 1.  Pick the (next) highest-precedence configuration qualifier in the list. (Start with MCC, then move down.)	
 		for (curq in 0..._qualifiers.length)
 		{
-			var rgx = new EReg(_qualifiers[curq].regex, 'i');
-			var newRemainingIdx = new Array<Int>();
+			var rgx = new EReg(_qualifiers[curq].regex, 'i'); //case insensitive match for resource paths
+			var newRemainingIdxs = new Array<Int>();
 			var newCompatibleResourceQualifiers = new Array<String>();
 			var requestedQValue = _requestedConfigQualifierValues[curq];
 
-			//todo this function too complicated, split it into simpler functions
+			//in the case of pixel density, even if no exact match found, android chooses between all available configs,
+			//the one that best matches the requested config	
 			if (_qualifiers[curq].name == "ScreenPixelDensity" && requestedQValue.length > 0)
 			{
-				var  requestPixelDensity = requestedQValue.substr(0, requestedQValue.length - 1); //remove '-' at end
+				var  requestedPixelDensity = trimLast(requestedQValue); //remove '-' at end
 				var  distanceFromRequestedDensity = new Array<Int>();
 
-				//in the case of pixel density, even if no exact match found, android chose between all available configs,
-				//the one that best matches the required config.In general, Android prefers scaling down a larger original
-				// image to scaling up a smaller original image
-				for (idx in remainingidxs)
+				for (i in 0...remainingIdxs.length)
 				{
-					var curqstr = compatibleResourcesQualifiers[idx];
-					if (rgx.match(curqstr))
+					var curqstr = compatibleResourcesConfigQualifiers[i];
+					if (rgx.match(curqstr)) //we have a PixelDensity qualifier defined for this resource
 					{
-						distanceFromRequestedDensity.push(calcPixelDensityDistance(rgx.matched(0), requestPixelDensity));
-						newRemainingIdx.push(idx);
+						distanceFromRequestedDensity.push(calcPixelDensityDistance(rgx.matched(0), requestedPixelDensity));
+						newRemainingIdxs.push(remainingIdxs[i]);
 						newCompatibleResourceQualifiers.push(rgx.matchedRight());
 					} 
 				}	
-				if (newRemainingIdx.length > 0)
+				if (newRemainingIdxs.length > 0)
 				{
-					//now select best matching resolution
-					var bestMatchDistance = 1000; //artificially big number
-					for (i in 0...newRemainingIdx.length)
-					{
-						var curd = distanceFromRequestedDensity[i];
-						if (Math.abs(curd) < Math.abs(bestMatchDistance))
-						{
-							bestMatchDistance = curd;
-						} else 
-						if (Math.abs(curd) == bestMatchDistance && curd > bestMatchDistance) //same distance, but positive instead of negative (i.e. higher pixel density)
-						{
-							bestMatchDistance = curd;
-						}
-					}
-					//finally select only configurations equal or better to bestMatchDistance
-					var newRemainingIdx2 = new Array<Int>();
-					var newCompatibleResourceQualifiers2 = new Array<String>();
-					for (i in 0...newRemainingIdx.length)
-					{
-						var curd = distanceFromRequestedDensity[i];
-						if (curd == bestMatchDistance)
-						{
-							newRemainingIdx2.push(newRemainingIdx[i]);
-							newCompatibleResourceQualifiers2.push(newCompatibleResourceQualifiers[i]);
-						}						
-					}
-					newRemainingIdx = newRemainingIdx2;
-					newCompatibleResourceQualifiers = newCompatibleResourceQualifiers2;
+					var bestd = getBestDistanceFromRequestedDensity(distanceFromRequestedDensity);
+					var res=SelectBestDistanceConfigurations(bestd,distanceFromRequestedDensity, newRemainingIdxs, newCompatibleResourceQualifiers);
+					newRemainingIdxs = res.idxs;
+					newCompatibleResourceQualifiers = res.values;
 				}
 			}
 			else
-			{
-				for (idx in remainingidxs)
-				{
-					var curqstr = compatibleResourcesQualifiers[idx];
+			{  //_qualifiers[curq].name != "ScreenPixelDensity" 
+
+				// * 2.Do any of the resource directories include this qualifier?
+				// *		-If No, return to step 1 and look at the next qualifier.
+				// *		-If Yes, continue to step 3. 
+				for (i in 0...remainingIdxs.length)
+				{ 
+					var curqstr = compatibleResourcesConfigQualifiers[i];
 					if (rgx.match(curqstr))
 					{
-						newRemainingIdx.push(idx);
+						newRemainingIdxs.push(remainingIdxs[i]);
 						newCompatibleResourceQualifiers.push(rgx.matchedRight());
 					} 
 				}
 			}
-			if (newRemainingIdx.length > 0) //some match found
-			{ //some resource speficy
-				remainingidxs = newRemainingIdx;
-				compatibleResourcesQualifiers = newCompatibleResourceQualifiers;
+			// * 3.Eliminate resource directories that do not include this qualifier.
+			if (newRemainingIdxs.length > 0) //some match found
+			{ 
+				remainingIdxs = newRemainingIdxs;
+				compatibleResourcesConfigQualifiers = newCompatibleResourceQualifiers;
 			} 
 		 	
-			if (remainingidxs.length == 1) break;
-		} 		
-		return compatibleResources[remainingidxs[0]];
+			if (remainingIdxs.length == 1) break;
+		}
+		if (remainingIdxs.length != 1)
+			trace("findBestMatchingResource() failed to identify a single matching resource");
+		return compatibleResources[remainingIdxs[0]];
 	}
 	
-	//trace (AndroidDeviceConfiguration.qualifiers[0]);
-	//var a:ConfigQualifierAndRegex = AndroidDeviceConfiguration.qualifiers[1];
-	//trace(a);
+	/**
+	 * select best matching resolution: closest to required, prefering higher density to lower density
+	 * 
+	 */
+	function getBestDistanceFromRequestedDensity(distanceFromRequestedDensity:Array<Int>):Int 
+	{
+		var bestd = 1000; //artificially big number
+		for (i in 0...distanceFromRequestedDensity.length)
+		{
+			var curd = distanceFromRequestedDensity[i];
+			if (Math.abs(curd) < Math.abs(bestd))
+			{
+				bestd = curd;
+			} else 
+			if (Math.abs(curd) == bestd && curd > bestd) //same distance, but positive instead of negative (i.e. higher pixel density)
+			{
+				bestd = curd;
+			}
+		}
+		return bestd;
+	}
+	/**
+	 *  select only configurations equal or better to bestd
+	 */
+	function SelectBestDistanceConfigurations(
+									bestd:Int, distanceFromRequestedDensity:Array<Int>,
+									idxs:Array<Int>, values:Array<String>)
+									: {idxs:Array<Int>,values:Array<String>}
+	{
+		var res_idxs = new Array<Int>();
+		var res_values = new Array<String>();
+		for (i in 0...idxs.length)
+		{
+			var curd = distanceFromRequestedDensity[i];
+			if (curd == bestd)
+			{
+				res_idxs.push(idxs[i]);
+				res_values.push(values[i]);
+			}						
+		}
+		return { idxs:res_idxs, values:res_values };
+	}	
+
 	
 }
 

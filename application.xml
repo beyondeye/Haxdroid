@@ -14,9 +14,11 @@
 	
 	<!-- classpath, haxe libs -->
 	<source path="src" />
+	<source path="unit" />
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="haxeui" />
+	<haxelib name="mockatoo" />
 	
 	<!-- assets -->
 	<icon path="assets/openfl.svg" />

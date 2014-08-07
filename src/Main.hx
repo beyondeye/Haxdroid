@@ -11,6 +11,7 @@ import haxe.ui.toolkit.events.UIEvent;
 import haxe.ui.toolkit.core.Macros;
 import haxe.ui.toolkit.style.StyleManager;
 import haxe.ui.toolkit.style.Style;
+import haxe.unit.TestResult;
 
 import com.eyebeyond.AndroidResourceLoader;
 import com.eyebeyond.AndroidXMLConverter;
@@ -19,6 +20,7 @@ import openfl.Assets;
 
 class Main {
     public static function main() {
+		UnitTestsRunner.runTests();
 		testConvertButton();
 	}
 
@@ -32,9 +34,6 @@ class Main {
         Toolkit.openFullscreen(function(root:Root) {
 			var resloader = new AndroidResourceLoader();
 			resloader.androidDeviceConfiguration.setConfigurationForDesktopPC();
-			var img = resloader.getDrawable("arrow_left");
-			resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "es");
-			var hellostring = resloader.getString("hello");
 			var androidxml = resloader.getLayout("onebutton.xml");
 			//..parse each object, 
 			//..create an xml element for each converted object
@@ -54,7 +53,7 @@ class Main {
 		Toolkit.theme = new GradientTheme();
 		Toolkit.init(); //initialize HaxeUI
 		
-		
+		UnitTestsRunner.runTests();
 		//basically, the meaning of this is initialize main activity
         Toolkit.openFullscreen(function(root:Root) {
 			var view = Toolkit.processXmlResource("assets/styled-buttons-with-inline-style.xml"); //read button definition from xml file
