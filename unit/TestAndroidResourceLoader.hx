@@ -55,7 +55,7 @@ class TestAndroidResourceLoader extends TestCase
 	public function testGetLocalizedValues()
 	{
 		var resloader = new AndroidResourceLoader();
-		resloader.androidDeviceConfiguration.setConfigurationForDesktopPC();
+		resloader.androidDeviceConfiguration.setConfiguration("ScreenOrientation", "land");
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "es");
 		var values_path = resloader.getResourcePath("values", "strings.xml");			
 		assertEquals(values_path, "androidres/values-es-land/strings.xml");
@@ -63,7 +63,7 @@ class TestAndroidResourceLoader extends TestCase
 	public function testGetLocalizedString()
 	{
 		var resloader = new AndroidResourceLoader();
-		resloader.androidDeviceConfiguration.setConfigurationForDesktopPC();
+		resloader.androidDeviceConfiguration.setConfiguration("ScreenOrientation", "land");
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "es");
 		var hellostring = resloader.getString("hello");			
 		assertEquals(hellostring, "Hola Mundo (es-land)!");
@@ -71,7 +71,7 @@ class TestAndroidResourceLoader extends TestCase
 	public function testGetLocalizedStringAfterConfigChange()
 	{
 		var resloader = new AndroidResourceLoader();
-		resloader.androidDeviceConfiguration.setConfigurationForDesktopPC();
+		resloader.androidDeviceConfiguration.setConfiguration("ScreenOrientation", "land");
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "es");
 		var hellostring = resloader.getString("hello");			
 		assertEquals(hellostring, "Hola Mundo (es-land)!");
