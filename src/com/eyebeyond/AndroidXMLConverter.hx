@@ -6,16 +6,16 @@ import Xml;
 
 class AndroidXMLConverter
 {
-	private var _logger:IConverterLogger = null;
+	public var logger(default,null):IConverterLogger = null;
 	private var _resloader:AndroidResourceLoader;
 	private var _nodeConverter:AndroidXMLNodeConverter;
-	public function new(resloader:AndroidResourceLoader, logger:IConverterLogger=null) 
+	public function new(resloader:AndroidResourceLoader, logger_:IConverterLogger=null) 
 	{
 		if (resloader == null) throw "AndroidXMLConverter called in invalid resloader";
 		_resloader = resloader;
-		_logger = logger;
-		if (_logger == null) _logger = new DefaultConverterLogger();
-		_nodeConverter =  new AndroidXMLNodeConverter(resloader,_logger);
+		logger = logger_;
+		if (logger == null) logger = new DefaultConverterLogger();
+		_nodeConverter =  new AndroidXMLNodeConverter(resloader,logger);
 	}
 	public function processXml(node:Xml):Xml 
 	{
@@ -35,7 +35,7 @@ class AndroidXMLConverter
 		var result:Xml = _nodeConverter.process(node);
 		if (result == null) 
 		{
-			_logger.warning("Could not find processor for '" + node.nodeName + "'");
+			logger.warning("Could not find processor for '" + node.nodeName + "'");
 		}
 		
 		for (child in node.elements())

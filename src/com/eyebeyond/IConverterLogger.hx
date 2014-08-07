@@ -6,6 +6,8 @@ package com.eyebeyond;
  */
 interface IConverterLogger
 {
+	var warningCount(default, null):Int;
+	var errorCount(default, null):Int;
 	function resetErrorsCounts():Void;
 	function printErrorCount():Void;
 	function warning(msg:String):Void;

@@ -12,6 +12,7 @@ class UnitTestsRunner
 	{
 		var runner = new TestRunner();
 		runner.add(new TestAndroidResourceLoader());
+		runner.add(new TestSingleAndroidControls());
 		runner.run();
 		trace(runner.result);
 	}
