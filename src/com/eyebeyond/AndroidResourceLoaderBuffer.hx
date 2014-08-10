@@ -70,6 +70,11 @@ class AndroidResourceLoaderBuffer
 		var resources = fileXml.elementsNamed("resources").next();
 		for (stringElement in resources.elements() ) //stringElement=<string name="hello">Hello World!</string>
 		{
+			if (stringElement.nodeName != "string")
+			{
+				trace("element of invalid type found where <string/> was expected" + stringElement.toString());
+				continue;
+			}			
 			var name = stringElement.get("name");
 			var txt = stringElement.firstChild().nodeValue;
 			_strings[name] = txt;
@@ -96,14 +101,19 @@ class AndroidResourceLoaderBuffer
 		var resources = fileXml.elementsNamed("resources").next();
 		for (colorElement in resources.elements() ) //stringElement=<string name="hello">Hello World!</string>
 		{
-			var name = colorElement.get("name");
+			if (colorElement.nodeName != "color")
+			{
+				trace("element of invalid type found where <color/> was expected" + colorElement.toString());
+				continue;
+			}
+			var colorName = colorElement.get("name");
 			var txt = StringTools.trim(colorElement.firstChild().nodeValue).toLowerCase();
 			var alpha = "ff";
 			var color = "000000";
 
 			var colorFormat = ~/#[a-f0-9]+/;
 			if (!colorFormat.match(txt))
-				trace('Invalid color format $txt for color $name');
+				trace('Invalid color format $txt for color $colorName');
 			else
 			{
 				switch(txt.length)
@@ -119,11 +129,11 @@ class AndroidResourceLoaderBuffer
 						alpha = txt.substr(1, 2);
 						color = txt.substr(3);
 					default:
-						trace('Invalid color format $txt for color $name');
+						trace('Invalid color format $txt for color $colorName');
 				}
 			}
-			_colors[name] = '0x$color';
-			_colorsWithAlpha[name] = '0x$alpha$color';
+			_colors[colorName] = '0x$color';
+			_colorsWithAlpha[colorName] = '0x$alpha$color';
 		}
 	}
 	/**
