@@ -44,6 +44,14 @@ class AndroidResourceLoader
 	{
 		return _loaderBuffer.getString(id);
 	}
+	public function getColor(id:String):String
+	{
+		return _loaderBuffer.getColor(id);
+	}
+	public function getColorWithAlpha(id:String):String
+	{
+		return _loaderBuffer.getColorWithAlpha(id);
+	}		
 
 	public  function hasResource(resourceType:String, resourceName:String):Bool
 	{

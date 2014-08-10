@@ -1,13 +1,51 @@
 package ;
 
+
 /**
  * Various helper function for comparing objects
  * @author dario
  */
 class CompareTools
 {
+	/**
+	 * return true if two strings match, when ignoring extra blanks
+	 */
+	public static function match_ignoreblanks(a:String, b:String):Bool
+	{
+		var cmpa = new StringCompareWithoutExtraBlanksIterator(a);
+		var cmpb = new StringCompareWithoutExtraBlanksIterator(b);
+		while (true)
+		{
+			cmpa.next(); cmpb.next();
+			if (cmpa.isEof && cmpb.isEof) return true;
+			if (cmpa.isEof || cmpb.isEof) return false;
+			if (cmpa.curchar != cmpb.curchar) return false;
+		}
+	}
 
-	public static inline function isSpace(c:Int):Bool
+	
+}
+
+/**
+ * A helper class used for comparing strings while ignoring extra blanks
+ */
+class StringCompareWithoutExtraBlanksIterator
+{
+	public var s(default,null):String;
+	public  var curi(default,null):Int;
+	public var slen(default,null):Int;
+	public  var isEof(default,null):Bool;
+	public  var curchar(default, null):Int;
+
+	public function new(s:String) 
+	{
+		this.s = s;
+		slen = s.length;
+		isEof = false;
+		curi = -1;
+		curchar = -1;
+	}
+	private static inline function isSpace(c:Int):Bool
 	{
 		return switch(c)
 		{
@@ -16,42 +54,27 @@ class CompareTools
 			default:
 				false;
 		}
-	}
-	/**
-	 * return true if two strings match, when ignoring extra blanks
-	 */
-	public static function match_ignoreblanks(a:String, b:String):Bool
+	}		
+	public function next():Void
 	{
-		var len_a = a.length, len_b = b.length;
-		var i_a = -1, i_b=-1;
-		var eof_a=false, eof_b=false;
-		var char_a:Int, char_b:Int;
-		while (true)
+		if (++curi >= slen) 
 		{
-			do
-			{
-				if (++i_a >= len_a) 
-				{
-					eof_a = true;
-					break;
-				}
-				char_a = StringTools.fastCodeAt(a, i_a);
-			} while ( isSpace(char_a));
-			do
-			{
-				if (++i_b >= len_b)
-				{
-					eof_b = true;
-					break;
-				}
-				char_b = StringTools.fastCodeAt(b, i_b);
-			} while ( isSpace(char_b));
-			if (eof_a && eof_b) return true;
-			if (eof_a || eof_b) return false;
-			//now we have to matching characters to compare
-			if (char_a != char_b) return false;
+			isEof = true;
+			return;
 		}
+		curchar = StringTools.fastCodeAt(s, curi);
+		if (isSpace(curchar)) 
+		{
+			curchar = 32;
+			//skip multiple blanks
+			while(true)
+			{
+				if (++curi >= slen) break;
+				var nxtchar = StringTools.fastCodeAt(s, curi);
+				if (!isSpace(nxtchar)) break; 
+			}
+			--curi;
+		}		
 	}
-
 	
 }
