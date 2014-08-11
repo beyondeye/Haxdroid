@@ -51,7 +51,12 @@ class AndroidResourceLoader
 	public function getColorWithAlpha(id:String):String
 	{
 		return _loaderBuffer.getColorWithAlpha(id);
-	}		
+	}
+	public function getDimension(id:String):AndroidDimension
+	{
+		return _loaderBuffer.getDimension(id);
+	}
+	
 
 	public  function hasResource(resourceType:String, resourceName:String):Bool
 	{

@@ -11,6 +11,7 @@ class AndroidResourceLoaderBuffer
 	private var _strings:Map<String,String>;
 	private var _colors:Map<String,String>;	
 	private var _colorsWithAlpha:Map<String,String>;	
+	private var _dimensions:Map<String,AndroidDimension>;	
 	private var _matchedResources:Map<String,String>;
 	private var _needInit:Bool;
 	
@@ -35,6 +36,11 @@ class AndroidResourceLoaderBuffer
 		if (_needInit) initValuesBuffer();
 		return _colorsWithAlpha[id];
 	}
+	public function getDimension(id:String):AndroidDimension
+	{
+		if (_needInit) initValuesBuffer();
+		return _dimensions[id];
+	}
 	
 	public function getBufferedMatchedResourceName(resourceType:String, resourceName:String):String
 	{
@@ -49,6 +55,7 @@ class AndroidResourceLoaderBuffer
 		_strings = new Map<String,String>();
 		_colors = new Map<String,String>();
 		_colorsWithAlpha = new Map<String,String>();
+		_dimensions = new Map<String,AndroidDimension>();	
 		_matchedResources = new Map<String,String>();
 		_needInit = true;
 	}
@@ -79,6 +86,8 @@ class AndroidResourceLoaderBuffer
 						processStringElement(valuesElement);
 					case "color":
 						processColorElement(valuesElement);
+					case "dimen":
+						processDimenElement(valuesElement);
 					default:
 						trace('Unknown values element type: $valuesElement.nodeName');
 				}
@@ -125,7 +134,7 @@ class AndroidResourceLoaderBuffer
 		_colors[colorName] = '0x$color';
 		_colorsWithAlpha[colorName] = '0x$alpha$color';
 	}
-	
+		
 
 	/**
 	 * take a single character hex value (0-15) and interpolate it to a two character (0-255) hex value 
@@ -137,6 +146,24 @@ class AndroidResourceLoaderBuffer
 		var n255:Int = Math.round(255 * n / 15);
 		return StringTools.hex(n255,2).toLowerCase();	//convert back to hex
 	}
+
+
+	private function processDimenElement(dimenElement:Xml):Void 
+	{
+		var name = dimenElement.get("name");
+		var txt = StringTools.trim(dimenElement.firstChild().nodeValue);
+		var d  = new AndroidDimension();
+		var regexsize = ~/^[0-9]+/;
+		if (!regexsize.match(txt))
+			trace('Invalid size $txt for dimensions $name');
+		d.size = Std.parseInt(regexsize.matched(0));
+		txt = regexsize.matchedRight();
+		var regexunit = ~/^(dp)|(sp)|(pt)|(px)|(mm)|(in)/;
+		if (!regexunit.match(txt))
+			trace('Invalid size unit $txt for dimensions $name');
+		d.units = regexunit.matched(0);
+		_dimensions[name] = d;
+	}	
 	
 
 	
