@@ -5,7 +5,9 @@ import openfl.display.BitmapData;
 using Lambda;
 
 /**
- * ...
+ * Class for accessing an application's resources, emulating Android Resource Management system
+ * The API of this class is inspired to class android.content.res.Resources in Android API
+ * See http://developer.android.com/reference/android/content/res/Resources.htm
  * @author dario
  */
 class AndroidResourceLoader
@@ -14,7 +16,7 @@ class AndroidResourceLoader
 	private var _androidResourcesList:Array<String>; //depends only on androidResourcesBasePath, not on _androidConfiguration
 	public var androidDeviceConfiguration(default, null) :AndroidDeviceConfiguration; //each time this is changed, need to rebuild _androidResourceBuffer
 	private var _loaderBuffer:AndroidResourceLoaderBuffer; //store resolved path to resources in androidresourcebuffer!!!
-
+	private var _displayMetrics:AndroidDisplayMetrics; //class that manage translation of virtual dimensions in real pixel dimensions
 
 	public function new(androidResourceBasePath:String="androidres/") 
 	{
@@ -25,8 +27,14 @@ class AndroidResourceLoader
 		}
 		InitAndroidResourcesList();
 		androidDeviceConfiguration = new AndroidDeviceConfiguration();
+		_displayMetrics = new AndroidDisplayMetrics(androidDeviceConfiguration);
 		_loaderBuffer = new AndroidResourceLoaderBuffer(this);
-		androidDeviceConfiguration.registerHandlerSignalConfigurationChanged(_loaderBuffer.reset);	
+		androidDeviceConfiguration.registerHandlerSignalConfigurationChanged(reset);	
+	}
+	private function reset():Void
+	{
+		_displayMetrics.reset();
+		_loaderBuffer.reset();
 	}
 	public function getLayout(lname:String):Xml
 	{
@@ -52,11 +60,35 @@ class AndroidResourceLoader
 	{
 		return _loaderBuffer.getColorWithAlpha(id);
 	}
-	public function getDimension(id:String):AndroidDimension
+	public function getDimensionRaw(id:String):AndroidDimension
 	{
-		return _loaderBuffer.getDimension(id);
+		return  _loaderBuffer.getDimension(id);
 	}
-	
+
+	/**
+	 * see http://developer.android.com/reference/android/content/res/Resources.html#getDimension%28int%29
+	 */
+	public function getDimension(id:String):Float
+	{
+		var d = _loaderBuffer.getDimension(id);
+		return _displayMetrics.getDimension(d);
+	}
+	/**
+	 * see http://developer.android.com/reference/android/content/res/Resources.html#getDimensionPixelOffset%28int%29
+	 */
+	public function getDimensionPixelOffset(id:String):Int
+	{
+		var d = _loaderBuffer.getDimension(id);
+		return _displayMetrics.getDimensionPixelOffset(d);
+	}
+	/**
+	 * see http://developer.android.com/reference/android/content/res/Resources.html#getDimensionPixelSize%28int%29
+	 */
+	public function getDimensionPixelSize(id:String):Int
+	{
+		var d = _loaderBuffer.getDimension(id);
+		return _displayMetrics.getDimensionPixelSize(d);
+	}		
 
 	public  function hasResource(resourceType:String, resourceName:String):Bool
 	{

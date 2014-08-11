@@ -43,7 +43,7 @@ class AndroidDeviceConfiguration
 		{name:"ScreenOrientation", regex: "^(port)|(land)-" },
 		{name:"UIMode", regex: "^(car)|(desk)|(television)|(appliance)|(watch)-" },
 		{name:"NightMode", regex: "^(night)|(notnight)-" },
-		{name:"ScreenPixelDensity", regex: "^(ldpi)|(mdpi)|(tvdpi)|(hdpi)|(xhdpi)|(nodpi)-" },
+		{name:"ScreenPixelDensity", regex: "^(ldpi)|(mdpi)|(tvdpi)|(hdpi)|(xhdpi)|(xxhdpi)|(xxxhdpi)|(nodpi)-" },
 		{name:"TouchScreenType", regex: "^(notouch)|(finger)-" },
 		{name:"KeyboardAvailability", regex: "^(keysexposed)|(keyshidden)|(keyssoft)-" },
 		{name:"PrimaryTextInputMethod", regex: "^(nokeys)|(qwerty)|(12key)-" },
@@ -55,7 +55,7 @@ class AndroidDeviceConfiguration
 	// ordered values ScreenPixelDensity, for lowest to highest.
 	// IMPORTANT: The algorithm used to match requested pixel density is based on the
 	// assumption that that values in this array are ordered this way
-	private static var screenPixelDensityStr = [ "nodpi", "ldpi", "mdpi", "tvdpi", "hdpi", "xhdpi" ];
+	private static var screenPixelDensityStr = [ "nodpi", "ldpi", "mdpi", "tvdpi", "hdpi", "xhdpi" ,"xxhdpi","xxxhdpi"];
 	
 	/**
 	 * Set Android device configuration to something similar to a desktop pc
@@ -68,7 +68,7 @@ class AndroidDeviceConfiguration
 		setConfiguration("ScreenSize", "xlarge");
 		setConfiguration("ScreenAspect", "long");
 		setConfiguration("ScreenOrientation", "land");
-		setConfiguration("ScreenPixelDensity", "hdpi");
+		setConfiguration("ScreenPixelDensity", "xhdpi");
 		setConfiguration("TouchScreenType", "notouch");
 		setConfiguration("KeyboardAvailability", "keysexposed");
 		setConfiguration("PrimaryTextInputMethod", "qwerty");
@@ -123,6 +123,23 @@ class AndroidDeviceConfiguration
 		_requestedConfigQualifierValues[qidx] = qualifierValue;
 		dispatchSignalConfigurationChanged();
 		return true;
+	}
+
+	public function getConfiguration(qualifierName:String):String
+	{
+		var qidx = findConfigQualifierIndex(qualifierName);
+		if (qidx < 0) 
+		{
+			trace ('Error:android configuration qualifier name ${qualifierName} unknown');
+			return null;
+		}
+		var qstr = _requestedConfigQualifierValues[qidx];
+		return trimLast(qstr); //remove last character ("-")
+	}
+
+	public function getConfigurationScreenPixelDensity():String
+	{
+		return getConfiguration("ScreenPixelDensity");
 	}
 
 	/**
