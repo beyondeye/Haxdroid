@@ -30,13 +30,13 @@ class AndroidResourceLoader
 	}
 	public function getLayout(lname:String):Xml
 	{
-		var resPath = getResourcePath("layout", lname);
+		var resPath = resolveResource("layout", lname);
 		if (resPath == null) return null;
 		return getXML(resPath);
 	}
 	public function getDrawable(lname:String):BitmapData
 	{
-		var resPath = getResourcePath("drawable", lname);
+		var resPath = resolveResource("drawable", lname);
 		if (resPath == null) return null;
 		return getBitmapData(resPath);
 	}	
@@ -55,7 +55,7 @@ class AndroidResourceLoader
 
 	public  function hasResource(resourceType:String, resourceName:String):Bool
 	{
-		return getResourcePath(resourceType, resourceName) != null;
+		return resolveResource(resourceType, resourceName) != null;
 	}
 	
 	/**
@@ -65,25 +65,63 @@ class AndroidResourceLoader
 	 * @param	resourceName
 	 * @return
 	 */
-	public function getResourcePath(resourceType:String, resourceName:String):String
+	public function resolveResource(resourceType:String, resourceName:String):String
 	{
+		if (resourceName == null) return null;
 		//TODO instead of running getAllcompatibleresources all the times, I should run it only once, when the android configuration is known, and then use the sublist obtained for further processing (this optimization is also documented in android documentaiton)
 		var buffered = _loaderBuffer.getBufferedMatchedResourceName(resourceType, resourceName);
 		if (buffered != null) return androidResourcesBasePath+buffered;
 		//--Need to sweat a bit for finding the matching resource
 		var compatibleResources:Array<String> = getAllCompatibleResources(resourceType, resourceName);
 		//-now run the algorithm (defined in android doc) that verify which of the compatible resources gives the best match
-		var res = androidDeviceConfiguration.findBestMatchingResource(compatibleResources, resourceType,resourceName);
+		var res = androidDeviceConfiguration.findBestMatchingResource(compatibleResources, resourceType);
+	
 
 //		var res:String = androidResourcesBasePath + resourceType + "/" + resourceName;
 		
 		_loaderBuffer.setBufferedMatchedResourceName(resourceType, resourceName, res);
 //		if (hasAsset(res)) return res; //NO NEED to check this, since we start from the list of all existing assets
 		return androidResourcesBasePath+res;
-}
+	}
+	/**
+	 * see http://developer.android.com/guide/topics/resources/providing-resources.html#BestMatch 
+	 * for explanation of the resource matching algorithm  
+	 * @param	resourceType
+	 * @return
+	 */
+	public function resolveAllResourcesOfType(resourceType:String):Array<String>
+	{
+		var resOfSelectedType = new Array<String>();  //here I will fill the result of all resolved resources of selected type
+		//TODO instead of running getAllcompatibleresources all the times, I should run it only once, when the android configuration is known, and then use the sublist obtained for further processing (this optimization is also documented in android documentaiton)
+		var remaining = getAllCompatibleResources(resourceType);
+		while (remaining.length > 0)
+		{
+			var cur = remaining[0];
+			var curname = cur.substr(cur.lastIndexOf('/')+1);
+			var curnameregex = new EReg( '/'+curname, null); //match resource name
+			var newRemaining = new Array<String>();
+			var selected = new Array<String>();
+			//select all resources with same name as firstname, and remove them from list
+			for(s in remaining)
+			{
+				if (curnameregex.match(s)) 
+					selected.push(s)
+				else
+					newRemaining.push(s);
+			}
+			remaining = newRemaining;
+			//run findBestMatchingResource for each group with same resource name
+			
+			//-now run the algorithm (defined in android doc) that verify which of the compatible resources with name firstname  gives the best match
+			var res = androidDeviceConfiguration.findBestMatchingResource(selected, resourceType);
+			resOfSelectedType.push(androidResourcesBasePath+res);
+		}
+		return resOfSelectedType;
+	}
+
 	
 
-	private function  getAllCompatibleResources(resourceType:String, resourceName:String):Array<String>
+	private function  getAllCompatibleResources(resourceType:String, resourceName:String=null):Array<String>
 	{
 		var list = new Array<String>();
 		
@@ -93,7 +131,7 @@ class AndroidResourceLoader
 			var fndpos = resource.indexOf(resourceType);
 			if (fndpos != 0) continue; //wrong resource type
 			var namestartIdx = resource.indexOf('/', resourceType.length)+1;
-			if (resource.indexOf(resourceName, namestartIdx) < 0) continue; //wrong resource name
+			if (resourceName!=null && resource.indexOf(resourceName, namestartIdx) < 0) continue; //wrong resource name
 			list.push(resource);
 		}
 		

@@ -252,10 +252,10 @@ class AndroidDeviceConfiguration
 	 *                    In general, Android prefers scaling down a larger original image to scaling up a smaller original image
 	 * 4.Go back and repeat steps 1, 2, and 3 until only one directory remains.  
 	 */
-	@:allow(com.eyebeyond.AndroidResourceLoader.getResourcePath)
-	private function findBestMatchingResource(compatibleResources:Array<String>, resourceType:String, resourceName:String):String
+	@:allow(com.eyebeyond.AndroidResourceLoader.resolveResource)
+	@:allow(com.eyebeyond.AndroidResourceLoader.resolveAllResourcesOfType)
+	private function findBestMatchingResource(compatibleResources:Array<String>, resourceType:String):String
 	{
-		//first extract config qualifier substring
 		var compatibleResourcesConfigQualifiers = extractResourceConfigQualifiers(compatibleResources,resourceType);
 
 		var remainingIdxs = [for (i in 0...compatibleResources.length) i]; 

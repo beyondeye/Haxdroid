@@ -12,6 +12,7 @@ class AndroidResourceLoaderBuffer
 	private var _colors:Map<String,String>;	
 	private var _colorsWithAlpha:Map<String,String>;	
 	private var _matchedResources:Map<String,String>;
+	private var _needInit:Bool;
 	
 	public function new(resLoader:AndroidResourceLoader) 
 	{
@@ -21,17 +22,17 @@ class AndroidResourceLoaderBuffer
 
 	public function getString(id:String):String
 	{
-		if (_strings == null) initStringsBuffer();
+		if (_needInit) initValuesBuffer();
 		return _strings[id];
 	}
 	public function getColor(id:String):String
 	{
-		if (_colors == null) initColorsBuffer();
+		if (_needInit) initValuesBuffer();
 		return _colors[id];
 	}
 	public function getColorWithAlpha(id:String):String
 	{
-		if (_colorsWithAlpha == null) initColorsBuffer();
+		if (_needInit) initValuesBuffer();
 		return _colorsWithAlpha[id];
 	}
 	
@@ -45,97 +46,87 @@ class AndroidResourceLoaderBuffer
 	}
 	public function reset():Void
 	{
-		_strings = null;
-		_colors = null;
-		_colorsWithAlpha = null;
+		_strings = new Map<String,String>();
+		_colors = new Map<String,String>();
+		_colorsWithAlpha = new Map<String,String>();
 		_matchedResources = new Map<String,String>();
+		_needInit = true;
 	}
-
-	private function initStringsBuffer()
+	
+	private function initValuesBuffer()
 	{
-		var stringsPath = _resLoader.getResourcePath("values", "strings.xml");
-		if (stringsPath == null) 
+		reset();
+		var valuesFiles = _resLoader.resolveAllResourcesOfType("values");
+		for (valuesFile in valuesFiles)
 		{
-			trace("Error: strings.xml resource not found!");
-			return;
-		}
-		//parse them
-		var fileXml = _resLoader.getXML(stringsPath);
-		if (fileXml == null)
-		{
-			trace("Error: reading/parsing strings.xml resource");
-		}
-		_strings = new Map<String,String>(); 
-		//now get strings values
-		var resources = fileXml.elementsNamed("resources").next();
-		for (stringElement in resources.elements() ) //stringElement=<string name="hello">Hello World!</string>
-		{
-			if (stringElement.nodeName != "string")
+			if (!~/(\.xml)$/.match(valuesFile)) continue; //skip files without .xml suffix
+			var fileXml = _resLoader.getXML(valuesFile);
+			if (fileXml == null)
 			{
-				trace("element of invalid type found where <string/> was expected" + stringElement.toString());
-				continue;
-			}			
-			var name = stringElement.get("name");
-			var txt = stringElement.firstChild().nodeValue;
-			_strings[name] = txt;
-		}
-
-	}	
-	private function initColorsBuffer()
-	{
-		var colorsPath = _resLoader.getResourcePath("values", "colors.xml");
-		if (colorsPath == null) 
-		{
-			trace("Error: colors.xml resource not found!");
-			return;
-		}
-		//parse them
-		var fileXml = _resLoader.getXML(colorsPath);
-		if (fileXml == null)
-		{
-			trace("Error: reading/parsing colors.xml resource");
-		}
-		_colors = new Map<String,String>(); 
-		_colorsWithAlpha = new Map<String,String>(); 
-		//now get strings values
-		var resources = fileXml.elementsNamed("resources").next();
-		for (colorElement in resources.elements() ) //stringElement=<string name="hello">Hello World!</string>
-		{
-			if (colorElement.nodeName != "color")
+				trace('Error: reading/parsing $valuesFile resource file');
+			}
+			var resources = fileXml.elementsNamed("resources").next();
+			if (resources == null)
 			{
-				trace("element of invalid type found where <color/> was expected" + colorElement.toString());
+				trace('cannot find resource element in $valuesFile');
 				continue;
 			}
-			var colorName = colorElement.get("name");
-			var txt = StringTools.trim(colorElement.firstChild().nodeValue).toLowerCase();
-			var alpha = "ff";
-			var color = "000000";
-
-			var colorFormat = ~/#[a-f0-9]+/;
-			if (!colorFormat.match(txt))
-				trace('Invalid color format $txt for color $colorName');
-			else
+			for (valuesElement in resources.elements() ) //stringElement=<string name="hello">Hello World!</string>
 			{
-				switch(txt.length)
+				switch(valuesElement.nodeName)
 				{
-					case 4: //#RGB
-						color = interp64(txt.charAt(1)) + interp64(txt.charAt(2)) + interp64(txt.charAt(3));
-					case 5: //#ARGB
-						alpha = interp64(txt.charAt(1));
-						color = interp64(txt.charAt(2)) + interp64(txt.charAt(3)) + interp64(txt.charAt(4));
-					case 7: // #RRGGBB
-						color = txt.substr(1);
-					case 9: // #AARRGGBB
-						alpha = txt.substr(1, 2);
-						color = txt.substr(3);
+					case "string":
+						processStringElement(valuesElement);
+					case "color":
+						processColorElement(valuesElement);
 					default:
-						trace('Invalid color format $txt for color $colorName');
+						trace('Unknown values element type: $valuesElement.nodeName');
 				}
-			}
-			_colors[colorName] = '0x$color';
-			_colorsWithAlpha[colorName] = '0x$alpha$color';
-		}
+			}			
+		}		
+		_needInit = false;
 	}
+	
+	private function processStringElement(stringElement:Xml):Void 
+	{
+		var name = stringElement.get("name");
+		var txt = stringElement.firstChild().nodeValue;
+		_strings[name] = txt;
+	}
+	
+	function processColorElement(colorElement:Xml):Void 
+	{
+		var colorName = colorElement.get("name");
+		var txt = StringTools.trim(colorElement.firstChild().nodeValue).toLowerCase();
+		var alpha = "ff";
+		var color = "000000";
+	
+		var colorFormat = ~/#[a-f0-9]+/;
+		if (!colorFormat.match(txt))
+			trace('Invalid color format $txt for color $colorName');
+		else
+		{
+			switch(txt.length)
+			{
+				case 4: //#RGB
+					color = interp64(txt.charAt(1)) + interp64(txt.charAt(2)) + interp64(txt.charAt(3));
+				case 5: //#ARGB
+					alpha = interp64(txt.charAt(1));
+					color = interp64(txt.charAt(2)) + interp64(txt.charAt(3)) + interp64(txt.charAt(4));
+				case 7: // #RRGGBB
+					color = txt.substr(1);
+				case 9: // #AARRGGBB
+					alpha = txt.substr(1, 2);
+					color = txt.substr(3);
+				default:
+					trace('Invalid color format $txt for color $colorName');
+			}
+		}
+		_colors[colorName] = '0x$color';
+		_colorsWithAlpha[colorName] = '0x$alpha$color';
+	}
+	
+
 	/**
 	 * take a single character hex value (0-15) and interpolate it to a two character (0-255) hex value 
 	 * NOTE: no check is done of nstr being actually a single digit hex number
@@ -146,5 +137,9 @@ class AndroidResourceLoaderBuffer
 		var n255:Int = Math.round(255 * n / 15);
 		return StringTools.hex(n255,2).toLowerCase();	//convert back to hex
 	}
+	
+
+	
+
 	
 }

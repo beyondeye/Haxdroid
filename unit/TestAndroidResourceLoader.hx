@@ -31,7 +31,7 @@ class TestAndroidResourceLoader extends TestCase
 		var resloader = new AndroidResourceLoader();
 		resloader.androidDeviceConfiguration.setConfiguration("ScreenPixelDensity", "hdpi");
 
-		var img_path = resloader.getResourcePath("drawable", "arrow_left");
+		var img_path = resloader.resolveResource("drawable", "arrow_left");
 		assertEquals(img_path, "androidres/drawable-hdpi/arrow_left.png");
 	}
 	public function testGetDrawableResourceInexactPixelDensityMatch():Void
@@ -39,15 +39,15 @@ class TestAndroidResourceLoader extends TestCase
 		var resloader = new AndroidResourceLoader();
 		resloader.androidDeviceConfiguration.setConfiguration("ScreenPixelDensity", "ldpi");
 
-		var img_path = resloader.getResourcePath("drawable", "arrow_left");
+		var img_path = resloader.resolveResource("drawable", "arrow_left");
 		assertEquals(img_path, "androidres/drawable-mdpi/arrow_left.png"); //best match is this, since no ldpi version exists
 	}	
 	public function testGetDrawableResourceBuffered()
 	{
 		var resloader = spy(AndroidResourceLoader); //Mockatoo.spy
 		resloader.androidDeviceConfiguration.setConfiguration("ScreenPixelDensity", "hdpi");
-		var img_path = resloader.getResourcePath("drawable", "arrow_left");		
-		var img_path2 = resloader.getResourcePath("drawable", "arrow_left");
+		var img_path = resloader.resolveResource("drawable", "arrow_left");		
+		var img_path2 = resloader.resolveResource("drawable", "arrow_left");
 		resloader.getAllCompatibleResources("drawable", "arrow_left").verify(times(1)); //called only once, because second time obtained through  _loaderBuffer.getBufferedMatchedResourceName
 		assertEquals(img_path, "androidres/drawable-hdpi/arrow_left.png");
 		assertEquals(img_path, img_path2);
@@ -57,7 +57,7 @@ class TestAndroidResourceLoader extends TestCase
 		var resloader = new AndroidResourceLoader();
 		resloader.androidDeviceConfiguration.setConfiguration("ScreenOrientation", "land");
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "es");
-		var values_path = resloader.getResourcePath("values", "strings.xml");			
+		var values_path = resloader.resolveResource("values", "strings.xml");			
 		assertEquals(values_path, "androidres/values-es-land/strings.xml");
 	}	
 	public function testGetLocalizedString()
