@@ -69,7 +69,7 @@ class AndroidXMLNodeConverter
 		var res:Xml = Xml.createElement("button");
 
 		var astr = popAttribute(node, "android:text");
-		var text = resolveAndroidStringResource(astr);
+		var text = _resloader.getString(astr);
 		res.set("text", text);
 		var  converted_attrs:Map<String,String> = null;
 		for (attrname in node.attributes())
@@ -78,8 +78,6 @@ class AndroidXMLNodeConverter
 				
 		}
 
-		
-			
 			
 		return res;		
 	}
@@ -121,6 +119,8 @@ class AndroidXMLNodeConverter
 				res["percentWidth"] = "100";
 			case "wrap_content":
 				res["autoSize"] = "true";
+			default:
+				res["Width"]= Std.string(_resloader.getDimensionPixelSize(value));
 		}	
 		return res;
 	}
@@ -135,6 +135,8 @@ class AndroidXMLNodeConverter
 				res["percentHeight"] = "100";
 			case "wrap_content":
 				res["autoSize"] = "true";
+			default:
+				res["Height"]= Std.string(_resloader.getDimensionPixelSize(value));
 		}	
 		return res;
 	}
@@ -178,17 +180,7 @@ class AndroidXMLNodeConverter
 		return res;			
 	}
 		
-	function resolveAndroidStringResource(inputStr:String):String
-	{
-		var res:String = inputStr;
-		var rgx = ~/^@string\//; //string resource id syntax: "@string/mystringid"
-		while (rgx.match(res))
-		{ //resource id reference found
-			var stringId = rgx.matchedRight();
-			res = _resloader.getString(stringId); 
-		} //loop until the resolved string is a literal string, not a reference to another string resource
-		return res;
-	}
+	
 
 
 	

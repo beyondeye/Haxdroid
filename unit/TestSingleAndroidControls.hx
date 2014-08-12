@@ -27,7 +27,7 @@ class TestSingleAndroidControls extends TestCase
 	{
 		var resloader = new AndroidResourceLoader();
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "it"); //config change automatically trigger rebuild of string resource buffer
-		var androidxml = resloader.getLayout("onebutton.xml");		
+		var androidxml = resloader.getLayout("@layout/onebutton.xml");		
 		var converter = new AndroidXMLConverter(resloader);
 		var convertedxml = converter.processXml(androidxml);
 		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);

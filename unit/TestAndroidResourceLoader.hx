@@ -65,7 +65,7 @@ class TestAndroidResourceLoader extends TestCase
 		var resloader = new AndroidResourceLoader();
 		resloader.androidDeviceConfiguration.setConfiguration("ScreenOrientation", "land");
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "es");
-		var hellostring = resloader.getString("hello");			
+		var hellostring = resloader.getString("@string/hello");			
 		assertEquals(hellostring, "Hola Mundo (es-land)!");
 	}	
 	public function testGetLocalizedStringAfterConfigChange()
@@ -73,10 +73,10 @@ class TestAndroidResourceLoader extends TestCase
 		var resloader = new AndroidResourceLoader();
 		resloader.androidDeviceConfiguration.setConfiguration("ScreenOrientation", "land");
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "es");
-		var hellostring = resloader.getString("hello");			
+		var hellostring = resloader.getString("@string/hello");			
 		assertEquals(hellostring, "Hola Mundo (es-land)!");
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "it"); //config change automatically trigger rebuild of string resource buffer
-		var hellostring_it = resloader.getString("hello");			
+		var hellostring_it = resloader.getString("@string/hello");			
 		assertEquals(hellostring_it, "Ciao Mondo!");		
 	}		
 	

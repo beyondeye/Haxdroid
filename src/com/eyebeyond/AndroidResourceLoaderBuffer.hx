@@ -9,8 +9,7 @@ class AndroidResourceLoaderBuffer
 {
 	private var _resLoader:AndroidResourceLoader;
 	private var _strings:Map<String,String>;
-	private var _colors:Map<String,String>;	
-	private var _colorsWithAlpha:Map<String,String>;	
+	private var _colors:Map<String,AndroidColor>;	
 	private var _dimensions:Map<String,AndroidDimension>;	
 	private var _matchedResources:Map<String,String>;
 	private var _needInit:Bool;
@@ -26,16 +25,12 @@ class AndroidResourceLoaderBuffer
 		if (_needInit) initValuesBuffer();
 		return _strings[id];
 	}
-	public function getColor(id:String):String
+	public function getColor(id:String):AndroidColor
 	{
 		if (_needInit) initValuesBuffer();
 		return _colors[id];
 	}
-	public function getColorWithAlpha(id:String):String
-	{
-		if (_needInit) initValuesBuffer();
-		return _colorsWithAlpha[id];
-	}
+
 	public function getDimension(id:String):AndroidDimension
 	{
 		if (_needInit) initValuesBuffer();
@@ -53,8 +48,7 @@ class AndroidResourceLoaderBuffer
 	public function reset():Void
 	{
 		_strings = new Map<String,String>();
-		_colors = new Map<String,String>();
-		_colorsWithAlpha = new Map<String,String>();
+		_colors = new Map<String,AndroidColor>();
 		_dimensions = new Map<String,AndroidDimension>();	
 		_matchedResources = new Map<String,String>();
 		_needInit = true;
@@ -92,9 +86,70 @@ class AndroidResourceLoaderBuffer
 						trace('Unknown values element type: $valuesElement.nodeName');
 				}
 			}			
-		}		
+		}
+		resolveValuesAlias(); //after parsing all xml files, need to resolve aliases!
 		_needInit = false;
 	}
+	private function resolveValuesAlias()
+	{
+		//todo: rewrite this function using unified loop and resolve function for each resource type
+		for (key in _strings.keys())
+		{
+			_strings[key] = resolveString(_strings[key]); //TODO: use lambda?
+		}
+		for (key in _dimensions.keys())
+		{
+			_dimensions[key] = resolveDimension(_dimensions[key]); //TODO: use lambda?
+		}
+		for (key in _colors.keys())
+		{
+			_colors[key] = resolveColor(_colors[key]); //TODO: use lambda?
+		}			
+	}
+
+	private function resolveString(inputStr:String):String
+	{
+		var res:String = inputStr;
+		var rgx = ~/^@string\//; //string resource id syntax: "@string/mystringid"
+		while (rgx.match(res))
+		{ //resource id reference found
+			var id = rgx.matchedRight();
+			res = _strings[id]; 
+		} //loop until the resolved string is a literal string, not a reference to another string resource
+		return res;
+	}	
+	
+	/**
+	 * if inputStr is a literal dimension definition, parse it and returns it
+	 * if it is a reference to a dimension resource (@dimen/dimenid), then resolve it and return it
+	 * resolve the dimen resource recursively, in order to support dimen resource aliases
+	 */	
+	public function resolveDimension(inputDim:AndroidDimension):AndroidDimension
+	{
+		var res:AndroidDimension = inputDim;
+		var rgx = ~/^@dimen\//; //dimension resource id syntax: "@dimen/mydimensionid"
+		while (rgx.match(res.str))
+		{ //resource id reference found
+			var id = rgx.matchedRight();
+			res = _dimensions[id]; 
+		} 
+		return res;
+	}
+	
+	public function resolveColor(inputCol:AndroidColor):AndroidColor
+	{
+		var res:AndroidColor = inputCol;
+		var rgx = ~/^@color\//; //color resource id syntax: "@color/mydimensionid"
+		while (rgx.match(res.str))
+		{ //resource id reference found
+			var id = rgx.matchedRight();
+			res = _colors[id]; 
+		} 
+		return res;
+	}			
+	
+	
+	
 	
 	private function processStringElement(stringElement:Xml):Void 
 	{
@@ -106,64 +161,38 @@ class AndroidResourceLoaderBuffer
 	function processColorElement(colorElement:Xml):Void 
 	{
 		var colorName = colorElement.get("name");
-		var txt = StringTools.trim(colorElement.firstChild().nodeValue).toLowerCase();
-		var alpha = "ff";
-		var color = "000000";
-	
-		var colorFormat = ~/#[a-f0-9]+/;
-		if (!colorFormat.match(txt))
-			trace('Invalid color format $txt for color $colorName');
+		var valuestr = colorElement.firstChild().nodeValue;
+		//color definition refer to another color resource, delay resolve and parse
+		var color:AndroidColor;
+		if (valuestr.indexOf("@color/") >= 0) 
+			color = new AndroidColor(valuestr);
 		else
 		{
-			switch(txt.length)
-			{
-				case 4: //#RGB
-					color = interp64(txt.charAt(1)) + interp64(txt.charAt(2)) + interp64(txt.charAt(3));
-				case 5: //#ARGB
-					alpha = interp64(txt.charAt(1));
-					color = interp64(txt.charAt(2)) + interp64(txt.charAt(3)) + interp64(txt.charAt(4));
-				case 7: // #RRGGBB
-					color = txt.substr(1);
-				case 9: // #AARRGGBB
-					alpha = txt.substr(1, 2);
-					color = txt.substr(3);
-				default:
-					trace('Invalid color format $txt for color $colorName');
-			}
+			color = AndroidResourceParsers.parseAndroidColor(valuestr);
+			if (color == null)
+				trace('Invalid color format $valuestr for color $colorName');
 		}
-		_colors[colorName] = '0x$color';
-		_colorsWithAlpha[colorName] = '0x$alpha$color';
+		 
+		_colors[colorName] = color;
 	}
-		
-
-	/**
-	 * take a single character hex value (0-15) and interpolate it to a two character (0-255) hex value 
-	 * NOTE: no check is done of nstr being actually a single digit hex number
-	 */
-	private function interp64(nstr:String):String
-	{
-		var n:Float = Std.parseInt("0x" + nstr); //parseInt support hex numbers
-		var n255:Int = Math.round(255 * n / 15);
-		return StringTools.hex(n255,2).toLowerCase();	//convert back to hex
-	}
-
-
 	private function processDimenElement(dimenElement:Xml):Void 
 	{
 		var name = dimenElement.get("name");
-		var txt = StringTools.trim(dimenElement.firstChild().nodeValue);
-		var d  = new AndroidDimension();
-		var regexsize = ~/^[0-9]+/;
-		if (!regexsize.match(txt))
-			trace('Invalid size $txt for dimensions $name');
-		d.size = Std.parseInt(regexsize.matched(0));
-		txt = regexsize.matchedRight();
-		var regexunit = ~/^(dp)|(sp)|(pt)|(px)|(mm)|(in)/;
-		if (!regexunit.match(txt))
-			trace('Invalid size unit $txt for dimensions $name');
-		d.units = regexunit.matched(0);
-		_dimensions[name] = d;
+		var valuestr = dimenElement.firstChild().nodeValue;
+		var dimen:AndroidDimension;
+		if (valuestr.indexOf("@dimen/") >= 0) //dimension definition refer to another dimen resource, delay resolve and parse
+			dimen = new AndroidDimension(valuestr);
+		else
+		{
+			dimen = AndroidResourceParsers.parseAndroidDimension(valuestr);
+			if (dimen == null)
+				trace('Invalid format $valuestr for dimensions $name');
+		}
+
+		_dimensions[name] = dimen;
 	}	
+	
+
 	
 
 	

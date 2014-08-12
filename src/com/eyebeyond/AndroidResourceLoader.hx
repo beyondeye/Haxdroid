@@ -38,31 +38,48 @@ class AndroidResourceLoader
 	}
 	public function getLayout(lname:String):Xml
 	{
-		var resPath = resolveResource("layout", lname);
-		if (resPath == null) return null;
-		return getXML(resPath);
+		var res:Xml = null;
+		var id = AndroidResourceParsers.parseAndroidId(lname,"layout");
+		if (id!=null)
+		{ //resource id reference found
+			var resPath = resolveResource("layout", id);
+			if (resPath != null) res= getXML(resPath);
+		}
+		return res;		
 	}
-	public function getDrawable(lname:String):BitmapData
+	public function getDrawable(d:String):BitmapData
 	{
-		var resPath = resolveResource("drawable", lname);
-		if (resPath == null) return null;
-		return getBitmapData(resPath);
+		var res:BitmapData = null;
+		var id = AndroidResourceParsers.parseAndroidId(d,"drawable");
+		if (id!=null)
+		{ //resource id reference found
+			var resPath = resolveResource("drawable", id);
+			if (resPath != null) res= getBitmapData(resPath);
+		}
+		return res;
 	}	
-	public function getString(id:String):String
+	public function getColorRaw(c:String):AndroidColor
 	{
-		return _loaderBuffer.getString(id);
+		var id = AndroidResourceParsers.parseAndroidId(c, 'color');
+		if(id!=null) return _loaderBuffer.getColor(id);
+		return AndroidResourceParsers.parseAndroidColor(c);
 	}
+	
 	public function getColor(id:String):String
 	{
-		return _loaderBuffer.getColor(id);
+		var c = getColorRaw(id);
+		return c.color();
 	}
 	public function getColorWithAlpha(id:String):String
 	{
-		return _loaderBuffer.getColorWithAlpha(id);
+		var c = getColorRaw(id);
+		return c.colorWithAlpha();
 	}
-	public function getDimensionRaw(id:String):AndroidDimension
+	public function getDimensionRaw(d:String):AndroidDimension
 	{
-		return  _loaderBuffer.getDimension(id);
+		var id = AndroidResourceParsers.parseAndroidId(d, 'dimen');
+		if(id!=null) return _loaderBuffer.getDimension(id);
+		return AndroidResourceParsers.parseAndroidDimension(d);
 	}
 
 	/**
@@ -70,7 +87,7 @@ class AndroidResourceLoader
 	 */
 	public function getDimension(id:String):Float
 	{
-		var d = _loaderBuffer.getDimension(id);
+		var d = getDimensionRaw(id);
 		return _displayMetrics.getDimension(d);
 	}
 	/**
@@ -78,7 +95,7 @@ class AndroidResourceLoader
 	 */
 	public function getDimensionPixelOffset(id:String):Int
 	{
-		var d = _loaderBuffer.getDimension(id);
+		var d = getDimensionRaw(id);
 		return _displayMetrics.getDimensionPixelOffset(d);
 	}
 	/**
@@ -86,9 +103,26 @@ class AndroidResourceLoader
 	 */
 	public function getDimensionPixelSize(id:String):Int
 	{
-		var d = _loaderBuffer.getDimension(id);
+		var d = getDimensionRaw(id);
 		return _displayMetrics.getDimensionPixelSize(d);
 	}		
+
+	
+	/**
+	 * if inputStr is a literal string, return it
+	 * if it is a reference to a string resources (@string/stringid), then resolve it and return it
+	 * resolve the string resource recursively, in order to support string resource aliases
+	 */
+	public function getString(s:String):String
+	{
+		var res:String = s;
+		var id = AndroidResourceParsers.parseAndroidId(s, "string");
+		if (id!=null) res =  _loaderBuffer.getString(id); 
+		return res;
+	}	
+	
+
+	
 
 	public  function hasResource(resourceType:String, resourceName:String):Bool
 	{
