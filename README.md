@@ -1,21 +1,36 @@
 #AndroidXMLToHaxeUI
-##The problem I want to solve
-Haxe is a very powerful tool for cross platform development. Something I feel is missing from the Haxe eco-system is how a way 
-to better manage assets in 
-The code can be subdivided in two main modules.
-The first module almost fully emulate the Android Resource Management system on top of Openfl
-The second module, translate Android XML Layout files (GUI definition) in XML based GUI in HaxeUI
-Not all Android Widgets and Android Widgets properties are supported
-I have also implemented emulation of several Android widgets as custom HaxeUI components (TODO: make list)
-The code depends on the Mockatoo library for the Unit Tests. You can easily remove this dependency by deleting the test code
-Motivation
--Device dependent GUI support (without it, cross platform GUI support has no practical meaning) based on Android Resource Management system emulation
--Visual UI editor (use Graphical Layout editor in ADT for eclipse or Xamarin Studio)
--better combined cross platform/ native development: If you want to develop native code for Android, it make it easier to port the app to other platforms (support for "Android first" cross platform development
--I am open to contributors to extend the number of android widgets supported
--If somebody is interested in creating a similar tool for iOS GUI I will be happy to collaborate. I currently don't know much about iOS app resource manager format, but I can help in adding support for iOS widgets translation to haxeui  
+##The problem
+Haxe is a very powerful tool for cross platform development.But something I felt was missing from the Haxe eco-system was 
+a way to manage assets and GUI of an application as a function of the device and execution environment. This is actually critical for cross-platform 
+development to be practically viable.
 
--a concept similar as OpenFl is to the Flash development platform but for the Android development platform??
+Arguably one of the best of such systems currently available, is the [Android Resource Management System](http://developer.android.com/guide/topics/resources/overview.html)
 
-See screenshots of demos below (show android screen and same gui automatically ported to HaxeUI
+The first purpose of this project is to bring the power of Android Resource Management to Haxe. The code in this repository contains a full emulator of the android resource management system,
+that allow you to take the resource tree of an android application and automatically import, and use it from Haxe(+OpenFL). According to the way you define the execution configuration, 
+(i.e. display size, language preferences, and so on, (see [here](http://developer.android.com/guide/topics/resources/providing-resources.html) for more details)) the resource management 
+system will automatically provide your application with the right assets.
+
+##From Android XML Layouts to HaxeUI XML layouts
+The second purpose of this project is automatically generate [HaxeUI](http://haxeui.org/) XML based UI definitions from Android XML layouts. In other words
+once you have designed the GUI of your application using Android Developer Tools or Xamarin Studio(including the visual UI designer available there),
+you can translate it and use it in Haxe. Not all Android Widgets and all widget properties are currently supported. If you have requests for specific widgets or widget properties,
+please feel free to open an Issue. I will do my best to include all most used widgets.
+
+##Main benefits provided
+- Powerful device and runtime configuration dependent asset management (GUI and localization)
+- Allow for Android first cross platform development: develop your application first as a native Android application, then take the resources and import them directly in the haxe version of the
+ application for deploying to additional platforms.
+- Allow for cross platform GUI development based on Android UI design tools and HaxeUI, even if you do not design your application at all to run specifically on Android.
+
+
+##Future Roadmap
+The code for the Resource manager emulator already cover most of the important features of the original Android Resource Manager, but still need some work to complete
+all features and certainly additionally testing is needed.
+
+The code supporting translating Android Widget to HaxeUI widget is limited to a small number widget, need more work to extend to more Widgets
+
+I am also considering the possibility of using a different haxe UI engine as target (for example [stablexui](https://github.com/RealyUniqueName/StablexUI))
+
+I will be happy to hear about suggestion and request and open to collaborations
 
