@@ -1,7 +1,7 @@
 #AndroidXMLToHaxeUI
 ##The problem
 Haxe is a very powerful tool for cross platform development.But something I felt was missing from the Haxe eco-system was 
-a way to manage assets and GUI of an application as a function of the device and execution environment. This is actually critical for cross-platform 
+a way to manage assets and GUI of an application as a function of the device and the execution environment. This is actually critical for cross-platform 
 development to be practically viable.
 
 Arguably one of the best of such systems currently available, is the [Android Resource Management System](http://developer.android.com/guide/topics/resources/overview.html)
@@ -30,7 +30,7 @@ all features and certainly additionally testing is needed.
 
 The code supporting translating Android Widget to HaxeUI widget is limited to a small number widget, need more work to extend to more Widgets
 
-I am also considering the possibility of using a different haxe UI engine as target (for example [stablexui](https://github.com/RealyUniqueName/StablexUI))
+I am also considering the possibility of using a different Haxe UI engine as target (for example [stablexui](https://github.com/RealyUniqueName/StablexUI))
 
-I will be happy to hear about suggestion and request and open to collaborations
+I will be happy to hear about suggestions and requests and I am open to collaborations.
 
