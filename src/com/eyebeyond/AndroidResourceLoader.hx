@@ -139,7 +139,7 @@ class AndroidResourceLoader
 	public function resolveResource(resourceType:String, resourceName:String):String
 	{
 		if (resourceName == null) return null;
-		//TODO instead of running getAllcompatibleresources all the times, I should run it only once, when the android configuration is known, and then use the sublist obtained for further processing (this optimization is also documented in android documentaiton)
+		// TODO: instead of running getAllcompatibleresources all the times, I should run it only once, when the android configuration is known, and then use the sublist obtained for further processing (this optimization is also documented in android documentaiton)
 		var buffered = _loaderBuffer.getBufferedMatchedResourceName(resourceType, resourceName);
 		if (buffered != null) return androidResourcesBasePath+buffered;
 		//--Need to sweat a bit for finding the matching resource
@@ -163,7 +163,7 @@ class AndroidResourceLoader
 	public function resolveAllResourcesOfType(resourceType:String):Array<String>
 	{
 		var resOfSelectedType = new Array<String>();  //here I will fill the result of all resolved resources of selected type
-		//TODO instead of running getAllcompatibleresources all the times, I should run it only once, when the android configuration is known, and then use the sublist obtained for further processing (this optimization is also documented in android documentaiton)
+		// TODO: instead of running getAllcompatibleresources all the times, I should run it only once, when the android configuration is known, and then use the sublist obtained for further processing (this optimization is also documented in android documentaiton)
 		var remaining = getAllCompatibleResources(resourceType);
 		while (remaining.length > 0)
 		{

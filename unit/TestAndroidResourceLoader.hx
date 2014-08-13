@@ -12,19 +12,18 @@ import com.eyebeyond.AndroidDeviceConfiguration;
  * @author dario
  */
 
-//force access to private methods of AndroidResourceLoader from this class, for allowing work with mockatoo
-@:access(com.eyebeyond.AndroidResourceLoader)
+@:access(com.eyebeyond.AndroidResourceLoader) ////force access to private methods of AndroidResourceLoader from this class, for allowing work with mockatoo
 class TestAndroidResourceLoader extends TestCase
 {
 	public override function setup():Void 
 	{
 		super.setup();
-		//TODO add here initialization to do before starting tests
+		// TODO: add here initialization to do before starting tests
 	}
 	public override function tearDown():Void
 	{
 		super.tearDown();
-		//TODO add here code to run when test finished (deallocations, etc.)
+		// TODO: add here code to run when test finished (deallocations, etc.)
 	}
 	public function testGetDrawableResource():Void
 	{

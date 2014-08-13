@@ -8,4 +8,5 @@
     <dimen name="ruler_size">25mm</dimen>
     <dimen name="oldfontsize">16pt</dimen>
     <dimen name="ruler_inch_size">1in</dimen>
+	<dimen name="button_ysize_alias">@dimen/button_ysize</dimen>
 </resources>

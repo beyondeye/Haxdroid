@@ -11,7 +11,8 @@ import com.eyebeyond.AndroidDeviceConfiguration;
  * ...
  * @author dario
  */
-class TestSingleAndroidControls extends TestCase
+@:access(com.eyebeyond.AndroidResourceLoader) ////force access to private methods of AndroidResourceLoader from this class, for allowing work with mockatoo
+class TestSimpleResourceAliases extends TestCase
 {
 	public override function setup():Void 
 	{
@@ -23,19 +24,22 @@ class TestSingleAndroidControls extends TestCase
 		super.tearDown();
 		// TODO: add here code to run when test finished (deallocations, etc.)
 	}
-	public function testSingleButton()
+	public function testGetColorsMultipleFormats()
 	{
 		var resloader = new AndroidResourceLoader();
 		resloader.androidDeviceConfiguration.setConfiguration("LanguageAndRegion", "it"); //config change automatically trigger rebuild of string resource buffer
-		var androidxml = resloader.getLayout("@layout/onebutton.xml");		
-		var converter = new AndroidXMLConverter(resloader);
-		var convertedxml = converter.processXml(androidxml);
-		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);
-		assertTrue(CompareTools.match_ignoreblanks(convertedxml.toString(),
-		"<vbox percentWidth=\"100\" percentHeight=\"100\"><button text=\"Ciao Mondo!\" percentWidth=\"100\" autoSize=\"true\" id=\"myButton\"/></vbox>"));		
+
+		var blue_alias = resloader.getColor("@color/blue256alias");			
+		assertEquals(blue_alias, "0x0000ff");
+		
+		var hi = resloader.getString("@string/hello_alias");
+		assertEquals(hi, "Ciao Mondo!");
+		
+		var butsize = resloader.getDimensionRaw("@dimen/button_ysize_alias");
+		assertEquals(butsize.toString(), "25dp");		
+
 	}
 	
 }
-
 
 

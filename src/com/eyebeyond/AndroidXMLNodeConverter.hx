@@ -55,7 +55,7 @@ class AndroidXMLNodeConverter
 		addAttributes(dstWidget, converted_attrs);	
 
 			
-		//TODO this way of looping on attributes, is not so good, I should get attrname and attrval at the same time!
+		// TODO: this way of looping on attributes, is not so good, I should get attrname and attrval at the same time!
 		for (attrname in srcWidget.attributes())
 		{
 			if (StringTools.startsWith(attrname, "xmlns:")) 	continue;
@@ -144,7 +144,7 @@ class AndroidXMLNodeConverter
 	{
 		if (value == null) return null;
 		var res = new Map<String,String>();
-		//TODO perhaps I should use direct string operations instead of REGEX  for better performance
+		// TODO: perhaps I should use direct string operations instead of REGEX  for better performance
 		var rgx = ~/^@\+id\//; //new id definition syntax: "@+id/myid"
 		if (!rgx.match(value))
 		{
@@ -161,18 +161,18 @@ class AndroidXMLNodeConverter
 	}
 
 	
-	//TODO implement this using Haxe mixin feature (syntax extension for Xml object)
+	// TODO: implement this using Haxe mixin feature (syntax extension for Xml object)
 	private static function addAttributes(node:Xml, attrs:Map<String,String>):Void
 	{
 		if (attrs == null) return;
-		//TODO the following way of accessing the list of converted_attrs seems to me extremely inefficient
+		// TODO: the following way of accessing the list of converted_attrs seems to me extremely inefficient
 		for (attrname in attrs.keys())
 		{
 			node.set(attrname, attrs.get(attrname));
 		}		
 	}
 
-	//TODO implement this using Haxe mixin feature (syntax extension for Xml object)
+	// TODO: implement this using Haxe mixin feature (syntax extension for Xml object)
 	private static function popAttribute(node:Xml, attrname:String):String
 	{
 		var res:String = node.get(attrname);

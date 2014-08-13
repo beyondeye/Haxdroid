@@ -92,18 +92,18 @@ class AndroidResourceLoaderBuffer
 	}
 	private function resolveValuesAlias()
 	{
-		//todo: rewrite this function using unified loop and resolve function for each resource type
+		// TODO:: rewrite this function using unified loop and resolve function for each resource type
 		for (key in _strings.keys())
 		{
-			_strings[key] = resolveString(_strings[key]); //TODO: use lambda?
+			_strings[key] = resolveString(_strings[key]); // TODO:: use lambda?
 		}
 		for (key in _dimensions.keys())
 		{
-			_dimensions[key] = resolveDimension(_dimensions[key]); //TODO: use lambda?
+			_dimensions[key] = resolveDimension(_dimensions[key]); // TODO:: use lambda?
 		}
 		for (key in _colors.keys())
 		{
-			_colors[key] = resolveColor(_colors[key]); //TODO: use lambda?
+			_colors[key] = resolveColor(_colors[key]); // TODO:: use lambda?
 		}			
 	}
 

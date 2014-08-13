@@ -164,7 +164,7 @@ class AndroidDeviceConfiguration
 		var resourceQualifiers:String = resourceNameWithConfigQualifiers.substring(qualifiersStartIdx,qualifiersEndIdx);
 		var curQualifierIdx = 0;
 		var curQualifierStringStartIdx = 1; //skip the initial '-'
-		//TODO I can simplify a lot this code by using only regex.match and rgx.matchedRight, instead of index counters and substring!
+		// TODO: I can simplify a lot this code by using only regex.match and rgx.matchedRight, instead of index counters and substring!
 		while (curQualifierStringStartIdx<resourceQualifiers.length)
 		{
 			var curQualifierStringEndIdx = resourceQualifiers.indexOf('-', curQualifierStringStartIdx); 

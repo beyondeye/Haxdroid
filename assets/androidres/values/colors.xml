@@ -4,9 +4,10 @@
   <color name="red256">#f00</color>
   <color name="green256">#0f0</color>
   <color name="blue256">#00f</color>
-   <color name="translucent_red256">#8f00</color>
-   <color name="red">#ff0000</color>
-   <color name="translucent_red">#80ff0000</color>
+  <color name="translucent_red256">#8f00</color>
+  <color name="red">#ff0000</color>
+  <color name="translucent_red">#80ff0000</color>
+  <color name="blue256alias">@color/blue256</color>
 
 </resources>
 

@@ -105,10 +105,10 @@ class AndroidDisplayMetrics
 		density = cast(densityDpi,Float) / cast(DENSITY_DEFAULT,Float);
 		scaledDensity = density; // for fonts
 		
-		heightPixels = 0; //TODO: assign this:  The absolute height of the display in pixels.
-		widthPixels = 0; //TODO: assign this: The absolute width of the display in pixels.
-		xdpi = 0; //TODO: assign this:  The exact physical pixels per inch of the screen in the X dimension.
-		ydpi = 0; //TODO: assign this: The exact physical pixels per inch of the screen in the Y dimension.		
+		heightPixels = 0; // TODO:: assign this:  The absolute height of the display in pixels.
+		widthPixels = 0; // TODO:: assign this: The absolute width of the display in pixels.
+		xdpi = 0; // TODO:: assign this:  The exact physical pixels per inch of the screen in the X dimension.
+		ydpi = 0; // TODO:: assign this: The exact physical pixels per inch of the screen in the Y dimension.		
 	}
 
 	

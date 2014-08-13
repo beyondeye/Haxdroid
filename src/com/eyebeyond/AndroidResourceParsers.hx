@@ -33,7 +33,7 @@ class AndroidResourceParsers
 		{
 			return null;
 		}
-		var units = regexunit.matched(0); //todo: useless call to matched, use directly unitstr
+		var units = regexunit.matched(0); // TODO:: useless call to matched, use directly unitstr
 		return new AndroidDimension(dstr,size,units);
 	}
 	public static function parseAndroidColor(cstr:String):AndroidColor
