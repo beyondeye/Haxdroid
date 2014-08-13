@@ -3,16 +3,16 @@ import haxe.unit.*;
 import mockatoo.Mockatoo.*;
 using mockatoo.Mockatoo;
 
-import com.eyebeyond.AndroidResourceLoader;
-import com.eyebeyond.AndroidXMLConverter;
-import com.eyebeyond.AndroidDeviceConfiguration;
+import com.eyebeyond.haxdroid.AndroidResourceLoader;
+import com.eyebeyond.haxdroid.AndroidXMLConverter;
+import com.eyebeyond.haxdroid.AndroidDeviceConfiguration;
 
 /**
  * ...
  * @author dario
  */
 
-@:access(com.eyebeyond.AndroidResourceLoader) ////force access to private methods of AndroidResourceLoader from this class, for allowing work with mockatoo
+@:access(com.eyebeyond.haxdroid.AndroidResourceLoader) ////force access to private methods of AndroidResourceLoader from this class, for allowing work with mockatoo
 class TestColorResources extends TestCase
 {
 	public override function setup():Void 

@@ -13,9 +13,9 @@ import haxe.ui.toolkit.style.StyleManager;
 import haxe.ui.toolkit.style.Style;
 import haxe.unit.TestResult;
 
-import com.eyebeyond.AndroidResourceLoader;
-import com.eyebeyond.AndroidXMLConverter;
-import com.eyebeyond.AndroidDeviceConfiguration;
+import com.eyebeyond.haxdroid.AndroidResourceLoader;
+import com.eyebeyond.haxdroid.AndroidXMLConverter;
+import com.eyebeyond.haxdroid.AndroidDeviceConfiguration;
 import openfl.Assets;
 
 class Main {

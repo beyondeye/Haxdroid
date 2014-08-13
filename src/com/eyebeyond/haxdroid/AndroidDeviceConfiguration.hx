@@ -1,4 +1,4 @@
-package com.eyebeyond;
+package com.eyebeyond.haxdroid;
 
 /**
  * @author dario
@@ -87,7 +87,7 @@ class AndroidDeviceConfiguration
 		dispatchSignalConfigurationChanged();
 	}
 	
-	@:allow(com.eyebeyond.AndroidResourceLoader.new)
+	@:allow(com.eyebeyond.haxdroid.AndroidResourceLoader.new)
 	private function registerHandlerSignalConfigurationChanged(handler:Void->Void)
 	{
 		_signalConfigurationChanged = handler;
@@ -151,7 +151,7 @@ class AndroidDeviceConfiguration
 	 * Full name of the resource, including resource qualifiers, (for example" "drawable-ldpi", "drawable-xhdpi", etc.)
 	 * @return
 	 */
-	@:allow(com.eyebeyond.AndroidResourceLoader.getAllCompatibleResources)	
+	@:allow(com.eyebeyond.haxdroid.AndroidResourceLoader.getAllCompatibleResources)	
 	private function isCompatibleResource(resourceType:String, resourceNameWithConfigQualifiers_:String):Bool
 	{
 		var resourceNameWithConfigQualifiers = resourceNameWithConfigQualifiers_.toLowerCase();
@@ -269,8 +269,8 @@ class AndroidDeviceConfiguration
 	 *                    In general, Android prefers scaling down a larger original image to scaling up a smaller original image
 	 * 4.Go back and repeat steps 1, 2, and 3 until only one directory remains.  
 	 */
-	@:allow(com.eyebeyond.AndroidResourceLoader.resolveResource)
-	@:allow(com.eyebeyond.AndroidResourceLoader.resolveAllResourcesOfType)
+	@:allow(com.eyebeyond.haxdroid.AndroidResourceLoader.resolveResource)
+	@:allow(com.eyebeyond.haxdroid.AndroidResourceLoader.resolveAllResourcesOfType)
 	private function findBestMatchingResource(compatibleResources:Array<String>, resourceType:String):String
 	{
 		var compatibleResourcesConfigQualifiers = extractResourceConfigQualifiers(compatibleResources,resourceType);

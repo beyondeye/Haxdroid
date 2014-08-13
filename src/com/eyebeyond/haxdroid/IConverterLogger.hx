@@ -1,4 +1,4 @@
-package com.eyebeyond;
+package com.eyebeyond.haxdroid;
 
 /**
  * ...

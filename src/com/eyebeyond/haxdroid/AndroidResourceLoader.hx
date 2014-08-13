@@ -1,4 +1,4 @@
-package com.eyebeyond ;
+package com.eyebeyond.haxdroid;
 import haxe.Resource;
 import openfl.Assets;
 import openfl.display.BitmapData;

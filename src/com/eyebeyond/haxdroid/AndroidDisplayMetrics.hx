@@ -1,4 +1,4 @@
-package com.eyebeyond;
+package com.eyebeyond.haxdroid;
 
 /**
  * see http://developer.android.com/reference/android/util/DisplayMetrics.html

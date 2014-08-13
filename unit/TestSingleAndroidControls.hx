@@ -3,9 +3,9 @@ import haxe.unit.*;
 import mockatoo.Mockatoo.*;
 using mockatoo.Mockatoo;
 
-import com.eyebeyond.AndroidResourceLoader;
-import com.eyebeyond.AndroidXMLConverter;
-import com.eyebeyond.AndroidDeviceConfiguration;
+import com.eyebeyond.haxdroid.AndroidResourceLoader;
+import com.eyebeyond.haxdroid.AndroidXMLConverter;
+import com.eyebeyond.haxdroid.AndroidDeviceConfiguration;
 
 /**
  * ...

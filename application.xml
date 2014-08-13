@@ -3,10 +3,10 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="AndroidXmlToHaxeUI" package="AndroidXmlToHaxeUI" version="1.0.0" company="dario" />
+	<meta title="Haxdroid" package="com.eyebeyond.haxdroid" version="0.3.0" company="eyebeyond" />
 	
 	<!-- output -->
-	<app main="Main" file="AndroidXmlToHaxeUI" path="bin" />
+	<app main="Main" file="Haxdroid" path="bin" />
 	
 	<window background="#000000" fps="60" />
 	<window width="800" height="480" unless="mobile" />
