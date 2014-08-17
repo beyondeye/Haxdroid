@@ -120,7 +120,7 @@ class AndroidXMLNodeConverter
 			case "wrap_content":
 				res["autoSize"] = "true";
 			default:
-				res["Width"]= Std.string(_resloader.getDimensionPixelSize(value));
+				res["width"]= Std.string(_resloader.getDimensionPixelSize(value));
 		}	
 		return res;
 	}
@@ -136,7 +136,7 @@ class AndroidXMLNodeConverter
 			case "wrap_content":
 				res["autoSize"] = "true";
 			default:
-				res["Height"]= Std.string(_resloader.getDimensionPixelSize(value));
+				res["height"]= Std.string(_resloader.getDimensionPixelSize(value));
 		}	
 		return res;
 	}
