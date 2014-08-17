@@ -28,6 +28,10 @@ class AndroidXMLNodeConverter
 					processAndroidLinearLayout(node);
 				case "Button":
 					processAndroidButton(node);
+				case "TextView":
+					processAndroidTextView(node);
+				case "EditText":
+					processAndroidEditText(node);
 				default:
 					_logger.warning("unsupported android widget: " + node.nodeName);
 					null;			
@@ -52,25 +56,137 @@ class AndroidXMLNodeConverter
 		//----
 		attrVal = popAttribute(srcWidget, "android:id");
 		converted_attrs = convertId(attrVal);
-		addAttributes(dstWidget, converted_attrs);	
+		addAttributes(dstWidget, converted_attrs);
+		//----
+		attrVal = popAttribute(srcWidget, "android:enabled");
+		converted_attrs = convertEnabled(attrVal);
+		addAttributes(dstWidget, converted_attrs);			
 
 			
 		// TODO: this way of looping on attributes, is not so good, I should get attrname and attrval at the same time!
 		for (attrname in srcWidget.attributes())
 		{
 			if (StringTools.startsWith(attrname, "xmlns:")) 	continue;
-			_logger.warning('Do not know how to process attribute of widget ${srcWidget.nodeName}: ${attrname}');
+			unkownAttribute(srcWidget, attrname);
 		}
 	}
 
+	private function unkownAttribute(widget:Xml, attrname:String, attrval:String=null):Void
+	{
+		if(attrval!=null)
+			_logger.warning('Do not know how to process attribute of widget ${widget.nodeName}: $attrname=$attrval');
+		else
+			_logger.warning('Do not know how to process attribute of widget ${widget.nodeName}: $attrname');
+	}
+	
+	private function processTextAttribute(srcnode:Xml, res:Xml):Void
+	{
+		var astr = popAttribute(srcnode, "android:text");
+		if (astr != null)
+		{
+			var text = _resloader.getString(astr);
+			res.set("text", text);			
+		}
+	
+	}
+	
+	private function processCommonTextAttributes(srcnode:Xml , res:Xml):Void 
+	{
+		processTextAttribute(srcnode, res);
+		var attrname = "android:textAlignment";
+		var alignstr = popAttribute(srcnode, attrname);
+		if (alignstr != null)
+		{
+			var dstalignstr:String =
+			switch(alignstr)
+			{
+				case "center":
+					"center";
+				case "inherit":
+					unkownAttribute(srcnode, attrname, alignstr);
+					"";
+				case "gravity":
+					unkownAttribute(srcnode, attrname, alignstr);
+					"";
+				case "textStart":
+					unkownAttribute(srcnode, attrname, alignstr);
+					"";
+				case "textEnd":
+					unkownAttribute(srcnode, attrname, alignstr);
+					"";
+				case "viewStart":
+					unkownAttribute(srcnode, attrname, alignstr);						
+					"";
+				case "viewEnd":
+					unkownAttribute(srcnode, attrname, alignstr);
+					"";
+				default:
+					unkownAttribute(srcnode, attrname, alignstr);						
+					"";
+			}
+			if(dstalignstr.length>0)
+				res.set("textAlign", dstalignstr);
+		}				
+	}
+	
+	private function processAndroidEditText( node:Xml ):Xml 
+	{
+		var res:Xml = Xml.createElement("textinput");
+
+		processCommonTextAttributes(node , res);
+
+		var hintstr = popAttribute(node, "android:hint");
+		if (hintstr != null)
+		{
+			var text = _resloader.getString(hintstr);
+			res.set("placeholderText", text);						
+		}
+				
+
+		var  converted_attrs:Map<String,String> = null;
+		for (attrname in node.attributes())
+		{
+
+				
+		}
+
+			
+		return res;		
+	}	
+	
+	
+	private function processAndroidTextView( node:Xml ):Xml 
+	{
+		var res:Xml = Xml.createElement("text");
+
+		processCommonTextAttributes(node,res);
+
+		var astr = res.get("text"); //get text if already defined
+		var hintstr = popAttribute(node, "android:hint");
+		if (hintstr != null && (astr == null || astr.length == 0))
+		{ //use hint, if text not defined
+			var text = _resloader.getString(hintstr);
+			res.set("text", text);						
+		}		
+
+		var  converted_attrs:Map<String,String> = null;
+		for (attrname in node.attributes())
+		{
+
+				
+		}
+
+			
+		return res;		
+	}	
+	
 	private function processAndroidButton( node:Xml ):Xml 
 	{
 		
 		var res:Xml = Xml.createElement("button");
 
-		var astr = popAttribute(node, "android:text");
-		var text = _resloader.getString(astr);
-		res.set("text", text);
+		processTextAttribute(node , res);
+
 		var  converted_attrs:Map<String,String> = null;
 		for (attrname in node.attributes())
 		{
@@ -82,6 +198,7 @@ class AndroidXMLNodeConverter
 		return res;		
 	}
 
+	
 	private function processAndroidLinearLayout( node:Xml ):Xml 
 	{
 		var or = popAttribute(node,"android:orientation");
@@ -159,6 +276,22 @@ class AndroidXMLNodeConverter
 		}	
 		return res;
 	}
+	
+	private function convertEnabled(value:String):Map<String,String>
+	{
+		if (value == null) return null;
+		var res = new Map<String,String>();
+		switch(value)
+		{
+			case "true":
+//				res["disabled"] = "false";
+			case "false":
+				res["disabled"] = "true";
+			default:
+				_logger.error('unrecognized android:enabled  value ${value}');
+		}			
+		return res;
+	}	
 
 	
 	// TODO: implement this using Haxe mixin feature (syntax extension for Xml object)
@@ -179,6 +312,8 @@ class AndroidXMLNodeConverter
 		if (res != null) node.remove(attrname);
 		return res;			
 	}
+	
+
 		
 	
 

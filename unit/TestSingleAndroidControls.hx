@@ -57,6 +57,34 @@ class TestSingleAndroidControls extends TestCase
 		"<vbox percentWidth=\"100\" percentHeight=\"100\"><button text=\"Ciao Mondo!\" percentWidth=\"100\" autoSize=\"true\" id=\"myButton\"/></vbox>"));		
 	}	
 	
+	public function testSingleTextView()
+	{
+		var androidxml = resloader.getLayout("@layout/onetextview.xml");		
+		var convertedxml = converter.processXml(androidxml);
+		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);
+		var res = convertedxml.toString();
+		assertTrue(CompareTools.match_ignoreblanks(res,
+		"<vbox percentWidth=\"100\" percentHeight=\"100\"><text text=\"This is a text\" textAlign=\"center\" percentWidth=\"100\" autoSize=\"true\" id=\"textView1\"/></vbox>"));
+	}	
+	public function testSingleEditText()
+	{
+		var androidxml = resloader.getLayout("@layout/oneedittext.xml");		
+		var convertedxml = converter.processXml(androidxml);
+		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);
+		var res = convertedxml.toString();
+		assertTrue(CompareTools.match_ignoreblanks(res,
+		"<vbox percentWidth=\"100\" percentHeight=\"100\"><textinput text=\"\" textAlign=\"center\" placeholderText=\"This is a hint\" percentWidth=\"100\" autoSize=\"true\" id=\"editText1\"/></vbox>"));		
+	}
+	public function testSingleEditTextDisabled()
+	{
+		var androidxml = resloader.getLayout("@layout/oneedittext_disabled.xml");		
+		var convertedxml = converter.processXml(androidxml);
+		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);
+		var res = convertedxml.toString();
+		assertTrue(CompareTools.match_ignoreblanks(res,
+		"<vbox percentWidth=\"100\" percentHeight=\"100\"><textinput text=\"\" textAlign=\"center\" placeholderText=\"This is a hint\" percentWidth=\"100\" autoSize=\"true\" id=\"editText1\" disabled=\"true\"/></vbox>"));
+		}	
+	
 }
 
 
