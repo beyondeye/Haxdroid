@@ -60,24 +60,28 @@ class AndroidXMLNodeConverter
 		//----
 		attrVal = popAttribute(srcWidget, "android:enabled");
 		converted_attrs = convertEnabled(attrVal);
-		addAttributes(dstWidget, converted_attrs);			
-
+		addAttributes(dstWidget, converted_attrs);
+		
+		processBackgroundAttribute(srcWidget, dstWidget);
+		processAlphaAttribute(srcWidget, dstWidget); // TODO: this is a more general attribute, of stylable widgets
 			
 		// TODO: this way of looping on attributes, is not so good, I should get attrname and attrval at the same time!
 		for (attrname in srcWidget.attributes())
 		{
 			if (StringTools.startsWith(attrname, "xmlns:")) 	continue;
-			unkownAttribute(srcWidget, attrname);
+			unknownAttribute(srcWidget, attrname);
 		}
 	}
 
-	private function unkownAttribute(widget:Xml, attrname:String, attrval:String=null):Void
+	private function unknownAttribute(widget:Xml, attrname:String, attrval:String=null):Void
 	{
 		if(attrval!=null)
 			_logger.warning('Do not know how to process attribute of widget ${widget.nodeName}: $attrname=$attrval');
 		else
 			_logger.warning('Do not know how to process attribute of widget ${widget.nodeName}: $attrname');
 	}
+
+	
 	
 	private function processTextAttribute(srcnode:Xml, res:Xml):Void
 	{
@@ -89,10 +93,51 @@ class AndroidXMLNodeConverter
 		}
 	
 	}
-	
-	private function processCommonTextAttributes(srcnode:Xml , res:Xml):Void 
+
+	private function processTextColorAttribute(srcnode:Xml, res:Xml):Void
 	{
-		processTextAttribute(srcnode, res);
+		var cstr = popAttribute(srcnode, "android:textColor");
+		if (cstr != null)
+		{
+			var color=_resloader.getColorObject(cstr);
+			addHaxeUIStyle(res, "color", color.color());
+		}		
+	}
+	
+	private function processAlphaAttribute(srcnode:Xml, res:Xml):Void
+	{
+		var astr = popAttribute(srcnode, "android:alpha");
+		if (astr != null)
+		{
+			addHaxeUIStyle(res, "alpha", astr);
+		}		
+	}	
+	
+	private function processBackgroundAttribute(srcnode:Xml, res:Xml):Void
+	{
+		var attrname = "android:background";
+		var attrval = popAttribute(srcnode, attrname);
+		if (attrval != null)
+		{
+			var color = _resloader.getColorObject(attrval); //is it a color?
+			if(color!=null) 
+			{
+				addHaxeUIStyle(res, "backgroundColor", color.color());
+				return;
+			}
+			var dpath = _resloader.resolveDrawable(attrval); //is it a drawable?
+			if (dpath != null)
+			{	
+				addHaxeUIStyle(res, "backgroundImage", dpath);
+				return;
+			}
+			//other type of android:background, not yet supported
+			unknownAttribute(srcnode, attrname, attrval);
+		}		
+	}		
+	
+	function processTextAlignmentAttribute(srcnode:Xml,res:Xml):Void 
+	{
 		var attrname = "android:textAlignment";
 		var alignstr = popAttribute(srcnode, attrname);
 		if (alignstr != null)
@@ -103,30 +148,37 @@ class AndroidXMLNodeConverter
 				case "center":
 					"center";
 				case "inherit":
-					unkownAttribute(srcnode, attrname, alignstr);
+					unknownAttribute(srcnode, attrname, alignstr);
 					"";
 				case "gravity":
-					unkownAttribute(srcnode, attrname, alignstr);
+					unknownAttribute(srcnode, attrname, alignstr);
 					"";
 				case "textStart":
-					unkownAttribute(srcnode, attrname, alignstr);
+					unknownAttribute(srcnode, attrname, alignstr);
 					"";
 				case "textEnd":
-					unkownAttribute(srcnode, attrname, alignstr);
+					unknownAttribute(srcnode, attrname, alignstr);
 					"";
 				case "viewStart":
-					unkownAttribute(srcnode, attrname, alignstr);						
+					unknownAttribute(srcnode, attrname, alignstr);						
 					"";
 				case "viewEnd":
-					unkownAttribute(srcnode, attrname, alignstr);
+					unknownAttribute(srcnode, attrname, alignstr);
 					"";
 				default:
-					unkownAttribute(srcnode, attrname, alignstr);						
+					unknownAttribute(srcnode, attrname, alignstr);						
 					"";
 			}
 			if(dstalignstr.length>0)
 				res.set("textAlign", dstalignstr);
-		}				
+		}		
+	}
+
+	private function processCommonTextAttributes(srcnode:Xml , res:Xml):Void 
+	{
+		processTextAttribute(srcnode, res);
+		processTextColorAttribute(srcnode, res);
+		processTextAlignmentAttribute(srcnode,res);		
 	}
 	
 	private function processAndroidEditText( node:Xml ):Xml 
@@ -141,16 +193,6 @@ class AndroidXMLNodeConverter
 			var text = _resloader.getString(hintstr);
 			res.set("placeholderText", text);						
 		}
-				
-
-		var  converted_attrs:Map<String,String> = null;
-		for (attrname in node.attributes())
-		{
-
-				
-		}
-
-			
 		return res;		
 	}	
 	
@@ -167,34 +209,14 @@ class AndroidXMLNodeConverter
 		{ //use hint, if text not defined
 			var text = _resloader.getString(hintstr);
 			res.set("text", text);						
-		}		
-
-		var  converted_attrs:Map<String,String> = null;
-		for (attrname in node.attributes())
-		{
-
-				
-		}
-
-			
+		}			
 		return res;		
 	}	
 	
 	private function processAndroidButton( node:Xml ):Xml 
-	{
-		
+	{		
 		var res:Xml = Xml.createElement("button");
-
 		processTextAttribute(node , res);
-
-		var  converted_attrs:Map<String,String> = null;
-		for (attrname in node.attributes())
-		{
-
-				
-		}
-
-			
 		return res;		
 	}
 
@@ -212,17 +234,7 @@ class AndroidXMLNodeConverter
 				default:
 					_logger.warning("LinearLayout: unknown android:orientation=" + or);
 					null;
-			}
-			var  converted_attrs:Map<String,String> = null;
-			for (attrname in node.attributes())
-			{
-
-					
-			}
-//    android:paddingLeft="16dp"
-//    android:paddingRight="16dp"
-			
-			
+			}	
 		return res;
 	}
 	
@@ -292,7 +304,6 @@ class AndroidXMLNodeConverter
 		}			
 		return res;
 	}	
-
 	
 	// TODO: implement this using Haxe mixin feature (syntax extension for Xml object)
 	private static function addAttributes(node:Xml, attrs:Map<String,String>):Void
@@ -314,7 +325,20 @@ class AndroidXMLNodeConverter
 	}
 	
 
-		
+	// TODO: add check that the same style not added twice?
+	private static function addHaxeUIStyle(node:Xml, styleName:String, styleValue:String):Void
+	{
+		var curstyles = node.get("style");
+		var newstyle = '$styleName: $styleValue';
+		var allstyles=
+			if (curstyles != null)
+				curstyles + ';' + newstyle;
+			else
+				newstyle;
+		node.set("style", allstyles);
+	}
+	
+
 	
 
 

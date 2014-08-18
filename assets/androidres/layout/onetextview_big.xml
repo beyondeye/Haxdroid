@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+>
+    <TextView
+        android:text="This is a red background text"
+		android:textColor = "#ff0"
+		android:background = "@color/red256"
+		/>
+    <TextView
+        android:text="This is a green background text"
+		android:textColor = "#f0f"
+		android:background = "@color/green256"
+		/>
+    <TextView
+        android:text="This is a blue background text"
+		android:textColor = "#ff0"
+		android:background = "@color/blue256"
+		/>		
+</LinearLayout>

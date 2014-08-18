@@ -29,17 +29,17 @@ class TestDimenResources  extends TestCase
 	{
 		var resloader = new AndroidResourceLoader();
 		
-		var d = resloader.getDimensionRaw("@dimen/button_ysize");			
+		var d = resloader.getDimensionObject("@dimen/button_ysize");			
 		assertEquals(d.toString(), "25dp");
-		d = resloader.getDimensionRaw("@dimen/font_size");			
+		d = resloader.getDimensionObject("@dimen/font_size");			
 		assertEquals(d.toString(), "16sp");		
-		d = resloader.getDimensionRaw("@dimen/box_ysize");			
+		d = resloader.getDimensionObject("@dimen/box_ysize");			
 		assertEquals(d.toString(), "30px");		
-		d = resloader.getDimensionRaw("@dimen/ruler_size");			
+		d = resloader.getDimensionObject("@dimen/ruler_size");			
 		assertEquals(d.toString(), "25mm");		
-		d = resloader.getDimensionRaw("@dimen/ruler_inch_size");			
+		d = resloader.getDimensionObject("@dimen/ruler_inch_size");			
 		assertEquals(d.toString(), "1in");		
-		d = resloader.getDimensionRaw("@dimen/oldfontsize");			
+		d = resloader.getDimensionObject("@dimen/oldfontsize");			
 		assertEquals(d.toString(), "16pt");		
 	}	
 	public function testGetDimensions()

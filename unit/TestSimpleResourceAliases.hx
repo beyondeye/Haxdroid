@@ -35,7 +35,7 @@ class TestSimpleResourceAliases extends TestCase
 		var hi = resloader.getString("@string/hello_alias");
 		assertEquals(hi, "Ciao Mondo!");
 		
-		var butsize = resloader.getDimensionRaw("@dimen/button_ysize_alias");
+		var butsize = resloader.getDimensionObject("@dimen/button_ysize_alias");
 		assertEquals(butsize.toString(), "25dp");		
 
 	}

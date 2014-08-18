@@ -23,4 +23,13 @@ class AndroidColor
 	{
 		return '0x$alphastr$colorstr';
 	}
+	public function alphaFloat():Float
+	{
+		return Std.parseFloat(alphastr) / 255;
+	}
+	public function alphaInt():String
+	{
+		return alphastr;
+	}
+	
 }

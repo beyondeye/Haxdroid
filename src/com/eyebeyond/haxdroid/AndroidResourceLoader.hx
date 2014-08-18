@@ -36,10 +36,10 @@ class AndroidResourceLoader
 		_displayMetrics.reset();
 		_loaderBuffer.reset();
 	}
-	public function getLayout(lname:String):Xml
+	public function getLayout(resName:String):Xml
 	{
 		var res:Xml = null;
-		var id = AndroidResourceParsers.parseAndroidId(lname,"layout");
+		var id = AndroidResourceParsers.parseAndroidId(resName,"layout");
 		if (id!=null)
 		{ //resource id reference found
 			var resPath = resolveResource("layout", id);
@@ -47,39 +47,43 @@ class AndroidResourceLoader
 		}
 		return res;		
 	}
-	public function getDrawable(d:String):BitmapData
+	public function getDrawable(resName:String):BitmapData
 	{
-		var res:BitmapData = null;
-		var id = AndroidResourceParsers.parseAndroidId(d,"drawable");
-		if (id!=null)
-		{ //resource id reference found
-			var resPath = resolveResource("drawable", id);
-			if (resPath != null) res= getBitmapData(resPath);
-		}
-		return res;
-	}	
-	public function getColorRaw(c:String):AndroidColor
+		var resPath = resolveDrawable(resName);
+		if (resPath == null) return null;
+		return  getBitmapData(resPath);
+	}
+	/**
+	 * return path to drawable asset
+	 */
+	public function resolveDrawable(resName:String):String
 	{
-		var id = AndroidResourceParsers.parseAndroidId(c, 'color');
+		var id = AndroidResourceParsers.parseAndroidId(resName,"drawable");
+		if (id == null) return null;
+		return resolveResource("drawable", id);
+	}		
+	public function getColorObject(resName:String):AndroidColor
+	{
+		var id = AndroidResourceParsers.parseAndroidId(resName, 'color');
 		if(id!=null) return _loaderBuffer.getColor(id);
-		return AndroidResourceParsers.parseAndroidColor(c);
+		return AndroidResourceParsers.parseAndroidColor(resName);
 	}
 	
-	public function getColor(id:String):String
+	public function getColor(resName:String):String
 	{
-		var c = getColorRaw(id);
+		var c = getColorObject(resName);
 		return c.color();
 	}
-	public function getColorWithAlpha(id:String):String
+	public function getColorWithAlpha(resName:String):String
 	{
-		var c = getColorRaw(id);
+		var c = getColorObject(resName);
 		return c.colorWithAlpha();
 	}
-	public function getDimensionRaw(d:String):AndroidDimension
+	public function getDimensionObject(resName:String):AndroidDimension
 	{
-		var id = AndroidResourceParsers.parseAndroidId(d, 'dimen');
+		var id = AndroidResourceParsers.parseAndroidId(resName, 'dimen');
 		if(id!=null) return _loaderBuffer.getDimension(id);
-		return AndroidResourceParsers.parseAndroidDimension(d);
+		return AndroidResourceParsers.parseAndroidDimension(resName);
 	}
 
 	/**
@@ -87,7 +91,7 @@ class AndroidResourceLoader
 	 */
 	public function getDimension(id:String):Float
 	{
-		var d = getDimensionRaw(id);
+		var d = getDimensionObject(id);
 		return _displayMetrics.getDimension(d);
 	}
 	/**
@@ -95,7 +99,7 @@ class AndroidResourceLoader
 	 */
 	public function getDimensionPixelOffset(id:String):Int
 	{
-		var d = getDimensionRaw(id);
+		var d = getDimensionObject(id);
 		return _displayMetrics.getDimensionPixelOffset(d);
 	}
 	/**
@@ -103,7 +107,7 @@ class AndroidResourceLoader
 	 */
 	public function getDimensionPixelSize(id:String):Int
 	{
-		var d = getDimensionRaw(id);
+		var d = getDimensionObject(id);
 		return _displayMetrics.getDimensionPixelSize(d);
 	}		
 
