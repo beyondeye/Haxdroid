@@ -64,7 +64,7 @@ class TestSingleAndroidControls extends TestCase
 		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);
 		var res = convertedxml.toString();
 		assertTrue(CompareTools.match_ignoreblanks(res,
-		"<vbox percentWidth=\"100\" percentHeight=\"100\"><text text=\"This is a text\" textAlign=\"center\" percentWidth=\"100\" autoSize=\"true\" id=\"textView1\"/></vbox>"));
+		"<vbox percentWidth=\"100\" percentHeight=\"100\"><text text=\"This is a text\" style=\"color: 0xff0000\" textAlign=\"center\" percentWidth=\"100\" autoSize=\"true\" id=\"textView1\"/></vbox>"));
 	}	
 	public function testSingleEditText()
 	{
@@ -83,7 +83,16 @@ class TestSingleAndroidControls extends TestCase
 		var res = convertedxml.toString();
 		assertTrue(CompareTools.match_ignoreblanks(res,
 		"<vbox percentWidth=\"100\" percentHeight=\"100\"><textinput text=\"\" textAlign=\"center\" placeholderText=\"This is a hint\" percentWidth=\"100\" autoSize=\"true\" id=\"editText1\" disabled=\"true\"/></vbox>"));
-		}	
+	}
+	public function testSingleCheckBox()
+	{
+		var androidxml = resloader.getLayout("@layout/onecheckbox.xml");		
+		var convertedxml = converter.processXml(androidxml);
+		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);
+		var res = convertedxml.toString();
+		assertTrue(CompareTools.match_ignoreblanks(res,
+		"<vbox percentWidth=\"100\" percentHeight=\"100\"><checkbox text=\"CheckBox\" style=\"color: 0xff0000\" selected=\"true\" percentWidth=\"100\" autoSize=\"true\" id=\"checkBox1\"/></vbox>"));
+	}		
 	
 }
 

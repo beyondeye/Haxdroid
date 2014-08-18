@@ -32,6 +32,8 @@ class AndroidXMLNodeConverter
 					processAndroidTextView(node);
 				case "EditText":
 					processAndroidEditText(node);
+				case "CheckBox":
+					processAndroidCheckBox(node);					
 				default:
 					_logger.warning("unsupported android widget: " + node.nodeName);
 					null;			
@@ -80,6 +82,14 @@ class AndroidXMLNodeConverter
 		else
 			_logger.warning('Do not know how to process attribute of widget ${widget.nodeName}: $attrname');
 	}
+	private function unsupportedHaxeUIFeature(widget:Xml, attrname:String):Void
+	{
+		_logger.warning('Attribute $attrname of widget ${widget.nodeName} has no equivalent in HaxeUI ');
+	}	
+	private function errorResolvingResource(widget:Xml, attrname:String, resname:String=null):Void
+	{
+		_logger.error('Failed resolving resource $resname referenced in widget ${widget.nodeName}, attribute $attrname');
+	}	
 
 	
 	
@@ -180,7 +190,16 @@ class AndroidXMLNodeConverter
 		processTextColorAttribute(srcnode, res);
 		processTextAlignmentAttribute(srcnode,res);		
 	}
-	
+	function processAndroidHintAttributeForText( node:Xml,res:Xml):Void 
+	{
+		var astr = res.get("text"); //get text if already defined
+		var hintstr = popAttribute(node, "android:hint");
+		if (hintstr != null && (astr == null || astr.length == 0))
+		{ //use hint, if text not defined
+			var text = _resloader.getString(hintstr);
+			res.set("text", text);						
+		}			
+	}	
 	private function processAndroidEditText( node:Xml ):Xml 
 	{
 		var res:Xml = Xml.createElement("textinput");
@@ -203,15 +222,56 @@ class AndroidXMLNodeConverter
 
 		processCommonTextAttributes(node,res);
 
-		var astr = res.get("text"); //get text if already defined
-		var hintstr = popAttribute(node, "android:hint");
-		if (hintstr != null && (astr == null || astr.length == 0))
-		{ //use hint, if text not defined
-			var text = _resloader.getString(hintstr);
-			res.set("text", text);						
-		}			
+		processAndroidHintAttributeForText(node, res);
 		return res;		
 	}	
+
+	function processAndroidCheckedAttribute(node:Xml,res:Xml):Void 
+	{
+		var checkedstr = popAttribute(node, "android:checked");
+		if (checkedstr != null)
+		{
+			switch(checkedstr)
+			{
+				case "true", "false":
+					res.set("selected", checkedstr);
+				default:
+					unknownAttribute(node, "checked", checkedstr);
+			}
+		}
+	}	
+	
+	/**
+	 * android attribute that defines the icon to be used for the checkbox
+	 */
+	function processAndroidButtonAttribute(node:Xml,res:Xml):Void 
+	{
+		var attrname = "android:button";
+		var bstr = popAttribute(node, attrname);
+		if (bstr == null) return;
+		var iconstr = _resloader.resolveDrawable(bstr);
+		if (iconstr == null)
+		{ //cannot resolve icon
+			errorResolvingResource(node, attrname, bstr);
+			return;
+		}
+		unsupportedHaxeUIFeature(node, attrname);
+//		addHaxeUIStyle(res, "icon", iconstr);
+	}	
+	
+	private function processAndroidCheckBox( node:Xml ):Xml 
+	{
+		var res:Xml = Xml.createElement("checkbox");
+
+		processCommonTextAttributes(node,res);
+
+		processAndroidHintAttributeForText(node, res);
+		
+		processAndroidCheckedAttribute(node, res);
+		
+		processAndroidButtonAttribute(node, res);
+		return res;
+	}		
 	
 	private function processAndroidButton( node:Xml ):Xml 
 	{		
@@ -337,6 +397,10 @@ class AndroidXMLNodeConverter
 				newstyle;
 		node.set("style", allstyles);
 	}
+	
+
+	
+
 	
 
 	
