@@ -1,6 +1,14 @@
 #Haxdroid V 0.1.0 22/8/2014
 First release: 
-##supported Android widgets
+##Supported Android Resources
+-Drawables
+-Layouts
+-Values:
+	-Colors
+	-Strings
+	-Dimensions
+
+##Supported Android widgets
 - LinearLayout
 - ScrollView
 - ListView
@@ -9,7 +17,9 @@ First release:
 - EditText
 - CheckBox
 - ImageView
-##supported Android widgets attributes
+
+
+##Supported Android widgets attributes
 -General
 	- android:id
 	- android:enabled
@@ -29,3 +39,7 @@ First release:
 	- android:background
 -Specific to widgets
 	- android:checked
+
+##Known Issues
+	
+

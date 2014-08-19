@@ -35,4 +35,44 @@ I am also considering the possibility of using a different Haxe UI engine as tar
 
 I will be happy to hear about suggestions and requests and I am open to collaborations.
 
+##Supported Android Resources
+-Drawables
+-Layouts
+-Values:
+	-Colors
+	-Strings
+	-Dimensions
+
+##Supported Android widgets
+- LinearLayout
+- ScrollView
+- ListView
+- Button
+- TextView
+- EditText
+- CheckBox
+- ImageView
+
+
+##Supported Android widgets attributes
+-General
+	- android:id
+	- android:enabled
+- Layout related
+	- android:layout_width,
+	- android:layout_height
+- Text related
+	- android:text
+	- android:textColor
+	- android:textAlignment
+	- android:hint
+-Image Related	
+	- android:src
+	- android:scaleType (partially)
+-Color related
+	- android:alpha
+	- android:background
+-Specific to widgets
+	- android:checked
+
 (C) Dario Elyasy
