@@ -53,12 +53,7 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 
 		_attrconverter.processCommonTextAttributes(node , res);
 
-		var hintstr = popAttribute(node, "android:hint");
-		if (hintstr != null)
-		{
-			var text = _resloader.getString(hintstr);
-			res.set("placeholderText", text);						
-		}
+		_attrconverter.processAndroidHintAttribute(node , res);
 		return res;		
 	}	
 	
@@ -122,22 +117,4 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 			}	
 		return res;
 	}
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-	
 }
