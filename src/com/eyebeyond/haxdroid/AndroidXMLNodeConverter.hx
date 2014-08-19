@@ -33,7 +33,9 @@ class AndroidXMLNodeConverter
 				case "EditText":
 					processAndroidEditText(node);
 				case "CheckBox":
-					processAndroidCheckBox(node);					
+					processAndroidCheckBox(node);	
+				case "ImageView":
+					processAndroidImageView(node);						
 				default:
 					_logger.warning("unsupported android widget: " + node.nodeName);
 					null;			
@@ -259,6 +261,53 @@ class AndroidXMLNodeConverter
 //		addHaxeUIStyle(res, "icon", iconstr);
 	}	
 	
+	private function processAndroidSrcAttribute(node:Xml,res:Xml):Void 
+	{
+		var attrname = "android:src";
+		var srcstr = popAttribute(node, attrname);
+		if (srcstr == null) 
+		{
+			//todo: add warning?
+			return;		
+		}
+		var imagestr = _resloader.resolveDrawable(srcstr);
+		if (imagestr == null)
+		{ //cannot resolve image
+			errorResolvingResource(node, attrname, imagestr);
+			return;
+		}		
+		res.set("resource", imagestr);
+	}
+	
+	private function processAndroidScaleTypeAttribute(node:Xml,res:Xml):Void 
+	{
+		var attrname = "android:scaleType";
+		var ststr = popAttribute(node, attrname);
+		if (ststr == null) return; 
+		switch(ststr)
+		{
+			case "matrix": //Scale using the image matrix when drawing. The image matrix can be set using setImageMatrix(Matrix). From XML, use this syntax: android:scaleType="matrix". 
+				unsupportedHaxeUIFeature(node, attrname);
+			case "fitXY": //scale the image using FILL:Scale in X and Y independently, so that src matches dst exactly. This may change the aspect ratio of the src
+				res.set("stretch", "true");
+			case "fitStart": //scale the image using START: Compute a scale that will maintain the original src aspect ratio, but will also ensure that src fits entirely inside dst. At least one axis (X or Y) will fit exactly. START aligns the result to the left and top edges of dst. 
+				unsupportedHaxeUIFeature(node, attrname);
+			case "fitCenter": //scale the image using CENTER: Compute a scale that will maintain the original src aspect ratio, but will also ensure that src fits entirely inside dst. At least one axis (X or Y) will fit exactly. The result is centered inside dst. 
+				unsupportedHaxeUIFeature(node, attrname);
+			case "fitEnd": //scale the image using END: Compute a scale that will maintain the original src aspect ratio, but will also ensure that src fits entirely inside dst. At least one axis (X or Y) will fit exactly. END aligns the result to the right and bottom edges of dst. 
+				unsupportedHaxeUIFeature(node, attrname);
+			case "center": //Center the image in the view, but perform no scaling. 
+				unsupportedHaxeUIFeature(node, attrname);
+			case "centerCrop": //Scale the image uniformly (maintain the image's aspect ratio) so that both dimensions (width and height) of the image will be equal to or larger than the corresponding dimension of the view (minus padding). 
+				unsupportedHaxeUIFeature(node, attrname);
+			case "centerinside":	//Scale the image uniformly (maintain the image's aspect ratio) so that both dimensions (width and height) of the image will be equal to or less than the corresponding dimension of the view (minus padding). 	
+				unsupportedHaxeUIFeature(node, attrname);
+			default:
+				unknownAttribute(node, attrname, ststr);
+		}
+	}
+	
+	
 	private function processAndroidCheckBox( node:Xml ):Xml 
 	{
 		var res:Xml = Xml.createElement("checkbox");
@@ -270,6 +319,15 @@ class AndroidXMLNodeConverter
 		processAndroidCheckedAttribute(node, res);
 		
 		processAndroidButtonAttribute(node, res);
+		return res;
+	}	
+	
+	private function processAndroidImageView( node:Xml ):Xml 
+	{
+		var res:Xml = Xml.createElement("image");
+		
+		processAndroidSrcAttribute(node, res);
+		processAndroidScaleTypeAttribute(node, res);
 		return res;
 	}		
 	
@@ -397,6 +455,8 @@ class AndroidXMLNodeConverter
 				newstyle;
 		node.set("style", allstyles);
 	}
+	
+
 	
 
 	

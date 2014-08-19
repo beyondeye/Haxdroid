@@ -92,7 +92,16 @@ class TestSingleAndroidControls extends TestCase
 		var res = convertedxml.toString();
 		assertTrue(CompareTools.match_ignoreblanks(res,
 		"<vbox percentWidth=\"100\" percentHeight=\"100\"><checkbox text=\"CheckBox\" style=\"color: 0xff0000\" selected=\"true\" percentWidth=\"100\" autoSize=\"true\" id=\"checkBox1\"/></vbox>"));
-	}		
+	}	
+	public function testSingleImage()
+	{
+		var androidxml = resloader.getLayout("@layout/oneimage.xml");		
+		var convertedxml = converter.processXml(androidxml);
+		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);
+		var res = convertedxml.toString();
+		assertTrue(CompareTools.match_ignoreblanks(res,
+		"<vbox percentWidth=\"100\" percentHeight=\"100\"><image resource=\"androidres/drawable-xhdpi/arrow_left.png\" stretch=\"true\" percentWidth=\"100\" height=\"40\" id=\"imageView1\"/></vbox>"));
+	}	
 	
 }
 
