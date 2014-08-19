@@ -40,7 +40,7 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 					_logger.warning("unsupported android widget: " + node.nodeName);
 					null;			
 			}
-		if (res != null) _attrconverter.processCommonWidgetAttributes(node, res);
+		if (res != null) _attrconverter.processCommonWidgetAttributes();
 		return res;
 	}
 	
@@ -50,10 +50,10 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 	private function processAndroidEditText( node:Xml ):Xml 
 	{
 		var res:Xml = Xml.createElement("textinput");
-
-		_attrconverter.processCommonTextAttributes(node , res);
-
-		_attrconverter.processAndroidHintAttribute(node , res);
+		_attrconverter.setSourceAndDest(node, res);
+		
+		_attrconverter.processCommonTextAttributes();
+		_attrconverter.processAndroidHintAttribute();
 		return res;		
 	}	
 	
@@ -61,10 +61,10 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 	private function processAndroidTextView( node:Xml ):Xml 
 	{
 		var res:Xml = Xml.createElement("text");
+		_attrconverter.setSourceAndDest(node, res);
 
-		_attrconverter.processCommonTextAttributes(node,res);
-
-		_attrconverter.processAndroidHintAttributeForText(node, res);
+		_attrconverter.processCommonTextAttributes();
+		_attrconverter.processAndroidHintAttributeForText();
 		return res;		
 	}	
 
@@ -73,30 +73,34 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 	private function processAndroidCheckBox( node:Xml ):Xml 
 	{
 		var res:Xml = Xml.createElement("checkbox");
+		_attrconverter.setSourceAndDest(node, res);
 
-		_attrconverter.processCommonTextAttributes(node,res);
+		_attrconverter.processCommonTextAttributes();
 
-		_attrconverter.processAndroidHintAttributeForText(node, res);
+		_attrconverter.processAndroidHintAttributeForText();
 		
-		_attrconverter.processAndroidCheckedAttribute(node, res);
+		_attrconverter.processAndroidCheckedAttribute();
 		
-		_attrconverter.processAndroidButtonAttribute(node, res);
+		_attrconverter.processAndroidButtonAttribute();
 		return res;
 	}	
 	
 	private function processAndroidImageView( node:Xml ):Xml 
 	{
 		var res:Xml = Xml.createElement("image");
+		_attrconverter.setSourceAndDest(node,res);
 		
-		_attrconverter.processAndroidSrcAttribute(node, res);
-		_attrconverter.processAndroidScaleTypeAttribute(node, res);
+		_attrconverter.processAndroidSrcAttribute();
+		_attrconverter.processAndroidScaleTypeAttribute();
 		return res;
 	}		
 	
 	private function processAndroidButton( node:Xml ):Xml 
 	{		
 		var res:Xml = Xml.createElement("button");
-		_attrconverter.processTextAttribute(node , res);
+		_attrconverter.setSourceAndDest(node,res);
+		
+		_attrconverter.processTextAttribute();
 		return res;		
 	}
 
@@ -115,6 +119,10 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 					_logger.warning("LinearLayout: unknown android:orientation=" + or);
 					null;
 			}	
+			
+		_attrconverter.setSourceAndDest(node, res); 
+		// TODO: add here conversion of additional attributes for LinearLayout
+	
 		return res;
 	}
 }
