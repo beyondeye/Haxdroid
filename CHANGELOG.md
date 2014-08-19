@@ -1,12 +1,13 @@
 #Haxdroid V 0.1.0 22/8/2014
 First release: 
 ##Supported Android Resources
--Drawables
--Layouts
--Values:
-	-Colors
-	-Strings
-	-Dimensions
+
+- Drawables
+- Layouts
+- Values:
+	- Colors
+	- Strings
+	- Dimensions
 
 ##Supported Android widgets
 - LinearLayout
@@ -20,7 +21,8 @@ First release:
 
 
 ##Supported Android widgets attributes
--General
+
+- General
 	- android:id
 	- android:enabled
 - Layout related
@@ -31,13 +33,13 @@ First release:
 	- android:textColor
 	- android:textAlignment
 	- android:hint
--Image Related	
+- Image Related	
 	- android:src
 	- android:scaleType
--Color related
+- Color related
 	- android:alpha
 	- android:background
--Specific to widgets
+- Specific to widgets
 	- android:checked
 
 ##Known Issues
