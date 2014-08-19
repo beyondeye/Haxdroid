@@ -9,7 +9,7 @@ First release:
 - EditText
 - CheckBox
 - ImageView
-##supported widget attributes
+##supported Android widgets attributes
 -General
 	- android:id
 	- android:enabled
