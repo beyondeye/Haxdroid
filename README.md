@@ -1,4 +1,4 @@
-#Haxdroid  documentation
+#Haxdroid Documentation
 ##The problem
 Haxe is a very powerful tool for cross platform development.But something I felt was missing from the Haxe eco-system was 
 a way to manage assets and GUI of an application as a function of the device and the execution environment. This is actually critical for cross-platform 
@@ -35,13 +35,16 @@ I am also considering the possibility of using a different Haxe UI engine as tar
 
 I will be happy to hear about suggestions and requests and I am open to collaborations.
 
+Dario Elyasy
+
 ##Supported Android Resources
--Drawables
--Layouts
--Values:
-	-Colors
-	-Strings
-	-Dimensions
+
+- Drawables
+- Layouts
+- Values:
+	- Colors
+	- Strings
+	- Dimensions
 
 ##Supported Android widgets
 - LinearLayout
@@ -55,7 +58,8 @@ I will be happy to hear about suggestions and requests and I am open to collabor
 
 
 ##Supported Android widgets attributes
--General
+
+- General
 	- android:id
 	- android:enabled
 - Layout related
@@ -66,13 +70,13 @@ I will be happy to hear about suggestions and requests and I am open to collabor
 	- android:textColor
 	- android:textAlignment
 	- android:hint
--Image Related	
+- Image Related	
 	- android:src
-	- android:scaleType (partially)
--Color related
+	- android:scaleType
+- Color related
 	- android:alpha
 	- android:background
--Specific to widgets
+- Specific to widgets
 	- android:checked
 
-(C) Dario Elyasy
+##Known Issues
