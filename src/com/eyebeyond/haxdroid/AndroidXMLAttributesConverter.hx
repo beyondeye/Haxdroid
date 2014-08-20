@@ -107,11 +107,20 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 	private static  var haxeuiPaddingAttributes = ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight"];
 	public function processPaddingAttributes():Void
 	{
+		var defaultPadding:Int = 0;
+		var attrVal = popAttribute(_srcNode, "android:padding");
+		if (attrVal != null) 
+		{
+			defaultPadding = Std.parseInt(attrVal);
+		}
 		for (i in 0...4)
 		{
-			var attrVal = popAttribute(_srcNode, androidPaddingAttributes[i]);
-			if (attrVal == null) continue;
-			var padval = _resloader.getDimensionPixelSize(attrVal);
+			attrVal = popAttribute(_srcNode, androidPaddingAttributes[i]);
+			var padval = defaultPadding;
+			if (attrVal != null) 
+			{
+				padval = _resloader.getDimensionPixelSize(attrVal);
+			}
 			if(padval==0) continue;
 			addHaxeUIStyle(_dstNode, haxeuiPaddingAttributes[i], Std.string(padval));			
 		}
