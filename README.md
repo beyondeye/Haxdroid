@@ -25,19 +25,22 @@ please feel free to open an Issue. I will do my best to include all most used wi
  application for deploying to additional platforms.
 - Allow for cross platform GUI development based on Android UI design tools and HaxeUI, even if you do not design your application at all to run specifically on Android.
 
+##Dependencies
+Of course you need to have [OpenFL](http://www.openfl.org/documentation/setup/install-haxe/) and its dependencies installed.
 
-##Future Roadmap
-The code for the Resource manager emulator already cover most of the important features of the original Android Resource Manager, but still need some work to complete
-all features and certainly additionally testing is needed.
+Additionally you need to install [HaxeUI](http://haxeui.org/download.jsp) and [Mockatoo](https://github.com/misprintt/mockatoo). Mockatoo is used only in unit tests. 
+##Development Roadmap
+The code for the Resource manager emulator already many of the important features of the original Android Resource Manager, but still need some work to complete
+all features.
 
 The code supporting translating Android Widget to HaxeUI widget is limited to a small number widget, need more work to extend to more Widgets
 
-I am also considering the possibility of using a different Haxe UI engine as target (for example [stablexui](https://github.com/RealyUniqueName/StablexUI))
+I am also considering the possibility of using a different UI engine as target (for example [stablexui](https://github.com/RealyUniqueName/StablexUI))
 
 I will be happy to hear about suggestions and requests and I am open to collaborations.
 ##Usage
 First create an instance of AndroidResourceLoader. You can give to the constructor a string parameter with the path to the root of Android resources directory. The default is "androidres"
-which resolve to assets/androidres.
+which resolves to assets/androidres.
 ```haxe
 var resloader = new AndroidResourceLoader();
 ```
