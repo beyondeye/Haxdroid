@@ -1,4 +1,5 @@
 #Haxdroid Documentation
+By Dario Elyasy
 ##The problem
 Haxe is a very powerful tool for cross platform development.But something I felt was missing from the Haxe eco-system was 
 a way to manage assets and GUI of an application as a function of the device and the execution environment. This is actually critical for cross-platform 
@@ -34,8 +35,18 @@ The code supporting translating Android Widget to HaxeUI widget is limited to a 
 I am also considering the possibility of using a different Haxe UI engine as target (for example [stablexui](https://github.com/RealyUniqueName/StablexUI))
 
 I will be happy to hear about suggestions and requests and I am open to collaborations.
+##Usage
+First create an instance of AndroidResourceLoader. You can give to the constructor a string parameter with the path to the root of Android resources directory. The default is "androidres"
+which resolve to assets/androidres.
+```haxe
+var resloader = new AndroidResourceLoader();
+```
+Secondly you should set the Android Device Configuration, with properties, like ScreenPixelDensity, Language and so, on. For a default configuration with parameters adjusted to match a PC, 
+you can call 
+```haxe
+resloader.androidDeviceConfiguration.setConfigurationForDesktopPC();
+```
 
-Dario Elyasy
 
 ##Supported Android Resources
 Look [here](http://developer.android.com/guide/topics/resources/providing-resources.html) for an overview on Android resources 
@@ -68,14 +79,14 @@ See android documentation of supported widgets for details about supported widge
 - Text related
 	- android:text
 	- android:textColor
-	- android:textAlignment
+	- android:textAlignment: only 'center' currently supported
 	- android:hint
 - Image Related	
 	- android:src
-	- android:scaleType
+	- android:scaleType: only 'fitXY' currently supported
 - Color related
 	- android:alpha
-	- android:background
+	- android:background: both background color and background image supported
 - Specific to widgets
 	- android:checked
 
