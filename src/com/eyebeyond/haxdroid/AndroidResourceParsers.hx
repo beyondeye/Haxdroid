@@ -28,7 +28,7 @@ class AndroidResourceParsers
 		}
 		var size = Std.parseInt(regexsize.matched(0));
 		var unitstr = regexsize.matchedRight();
-		var regexunit = ~/^(dp)|(sp)|(pt)|(px)|(mm)|(in)/;
+		var regexunit = ~/^(dp)|(dip)|(sp)|(pt)|(px)|(mm)|(in)/;
 		if (!regexunit.match(unitstr))
 		{
 			return null;

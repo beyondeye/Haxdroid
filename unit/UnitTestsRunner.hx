@@ -16,6 +16,7 @@ class UnitTestsRunner
 		runner.add(new TestAndroidResourceLoader());
 		runner.add(new TestColorResources());
 		runner.add(new TestSingleAndroidControls());
+		runner.add(new TestContainersAndroidControls());
 		runner.run();
 		trace(runner.result);
 	}

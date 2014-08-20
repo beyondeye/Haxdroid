@@ -34,7 +34,7 @@ class Main {
         Toolkit.openFullscreen(function(root:Root) {
 			var resloader = new AndroidResourceLoader();
 			resloader.androidDeviceConfiguration.setConfigurationForDesktopPC();
-			var androidxml = resloader.getLayout("@layout/oneimage.xml");
+			var androidxml = resloader.getLayout("@layout/scrollview.xml");
 			//..parse each object, 
 			//..create an xml element for each converted object
 			//serialize to file

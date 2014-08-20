@@ -116,7 +116,7 @@ class AndroidDisplayMetrics
 	{
 		return switch(d.units)
 		{
-			case "dp":
+			case "dp","dip":
 				d.size * density;
 			case "sp":
 				d.size * scaledDensity;

@@ -1,5 +1,5 @@
 #Haxdroid Documentation
-By Dario Elyasy
+By (Dario Elyasy)[http://il.linkedin.com/in/darioe/], [eye-beyond.com](http://eye-beyond.com)
 ##The problem
 Haxe is a very powerful tool for cross platform development.But something I felt was missing from the Haxe eco-system was 
 a way to manage assets and GUI of an application as a function of the device and the execution environment. This is actually critical for cross-platform 
@@ -29,13 +29,13 @@ please feel free to open an Issue. I will do my best to include all most used wi
 Of course you need to have [OpenFL](http://www.openfl.org/documentation/setup/install-haxe/) and its dependencies installed.
 
 Additionally you need to install [HaxeUI](http://haxeui.org/download.jsp) and [Mockatoo](https://github.com/misprintt/mockatoo). Mockatoo is used only in unit tests. 
+
 ##Development Roadmap
-The code for the Resource manager emulator already many of the important features of the original Android Resource Manager, but still need some work to complete
-all features.
+The code for the Resource manager emulator already implements many of the most important features of the original Android Resource Manager, but it still needs some work to be completed.
 
 The code supporting translating Android Widget to HaxeUI widget is limited to a small number widget, need more work to extend to more Widgets
 
-I am also considering the possibility of using a different UI engine as target (for example [stablexui](https://github.com/RealyUniqueName/StablexUI))
+I am also considering the possibility of adding another UI engine as target (for example [stablexui](https://github.com/RealyUniqueName/StablexUI))
 
 I will be happy to hear about suggestions and requests and I am open to collaborations.
 ##Usage
@@ -86,6 +86,8 @@ See android documentation of supported widgets for details about supported widge
 - Layout related
 	- android:layout_width,
 	- android:layout_height
+	- android:minWidth
+	- android:minHeight
 - Text related
 	- android:text
 	- android:textColor

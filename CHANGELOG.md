@@ -26,7 +26,7 @@ First release:
 	- android:id
 	- android:enabled
 - Layout related
-	- android:layout_width,
+	- android:layout_width
 	- android:layout_height
 - Text related
 	- android:text
@@ -35,7 +35,7 @@ First release:
 	- android:hint
 - Image Related	
 	- android:src
-	- android:scaleType
+	- android:scaleType: only 'fitXY' currently supported
 - Color related
 	- android:alpha
 	- android:background

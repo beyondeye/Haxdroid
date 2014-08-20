@@ -35,7 +35,9 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 				case "CheckBox":
 					processAndroidCheckBox(node);	
 				case "ImageView":
-					processAndroidImageView(node);						
+					processAndroidImageView(node);	
+				case "ScrollView":
+					processAndroidScrollView(node);		
 				default:
 					_logger.warning("unsupported android widget: " + node.nodeName);
 					null;			
@@ -92,6 +94,13 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 		
 		_attrconverter.processAndroidSrcAttribute();
 		_attrconverter.processAndroidScaleTypeAttribute();
+		return res;
+	}		
+	private function processAndroidScrollView( node:Xml ):Xml 
+	{
+		var res:Xml = Xml.createElement("scrollview");
+		_attrconverter.setSourceAndDest(node,res);
+		
 		return res;
 	}		
 	

@@ -26,9 +26,9 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 	{
 		if (_dstNode == null) return;
 
-		processWidthAttribute();
+		processWidthAndMinWidthAttributes();
 		
-		processHeightAttribute();
+		processHeightAndMinHeightAttribute();
 		
 		processIdAttribute();
 
@@ -44,7 +44,7 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 			unknownAttribute(_srcNode, attrname);
 		}
 	}
-	public function processWidthAttribute():Void
+	public function processWidthAndMinWidthAttributes():Void
 	{
 		var attrVal = popAttribute(_srcNode, "android:layout_width");	
 		if (attrVal == null) return ;
@@ -56,10 +56,23 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 				_dstNode.set("autoSize","true");
 			default:
 				_dstNode.set("width",Std.string(_resloader.getDimensionPixelSize(attrVal)));
-		}	
+		}
+		// TODO: need to check if in HaxeUI explicit width definition take precedence on percentHeight, once verified, can document official support for android:minWidth
+		// TODO: also need to add test for minWidth		
+		attrVal = popAttribute(_srcNode, "android:minWidth");
+		if (attrVal == null) return ;
+		var minval = Std.parseInt(attrVal);
+		if (minval == 0) return ;
+		var curStr = _dstNode.get("width");
+		if (curStr != null && curStr.length > 0)
+		{
+			var curval = Std.parseInt(curStr);
+			if (curval > minval) minval = curval;
+		}
+		_dstNode.set("width", Std.string(minval));
 	}
 
-	public function processHeightAttribute():Void
+	public function processHeightAndMinHeightAttribute():Void
 	{
 		var attrVal = popAttribute(_srcNode, "android:layout_height");	
 		if (attrVal == null) return ;
@@ -71,7 +84,21 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 				_dstNode.set("autoSize", "true");
 			default:
 				_dstNode.set("height",Std.string(_resloader.getDimensionPixelSize(attrVal)));
-		}	
+		}
+		// TODO: need to check if in HaxeUI explicit height definition take precedence on percentHeight, once verified, can document official support for android:minHeight
+		// TODO: also need to add test for minHeight
+		attrVal = popAttribute(_srcNode, "android:minHeight");
+		if (attrVal == null) return ;
+		var minval = Std.parseInt(attrVal);
+		if (minval == 0) return ;
+		var curStr = _dstNode.get("height");
+		if (curStr != null && curStr.length > 0)
+		{
+			var curval = Std.parseInt(curStr);
+			if (curval > minval) minval = curval;
+		}
+		_dstNode.set("height", Std.string(minval));
+		
 	}
 	
 	public function processEnabledAttribute():Void
@@ -125,7 +152,7 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 			var color = _resloader.getColorObject(attrval); //is it a color?
 			if(color!=null) 
 			{
-				addHaxeUIStyle(_dstNode, "backgroundColor", color.color());
+				addHaxeUIStyle(_dstNode, "backgroundColor", color.color()); // TODO: *ALPHASUPPORT*
 				return;
 			}
 			var dpath = _resloader.resolveDrawable(attrval); //is it a drawable?
@@ -157,7 +184,7 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 		if (cstr != null)
 		{
 			var color=_resloader.getColorObject(cstr);
-			addHaxeUIStyle(_dstNode, "color", color.color());
+			addHaxeUIStyle(_dstNode, "color", color.color());  // TODO: *ALPHASUPPORT*
 		}		
 	}
 	
