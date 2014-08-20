@@ -30,6 +30,8 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 		
 		processHeightAndMinHeightAttribute();
 		
+		processPaddingAttributes();
+		
 		processIdAttribute();
 
 		processEnabledAttribute();
@@ -61,7 +63,7 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 		// TODO: also need to add test for minWidth		
 		attrVal = popAttribute(_srcNode, "android:minWidth");
 		if (attrVal == null) return ;
-		var minval = Std.parseInt(attrVal);
+		var minval = _resloader.getDimensionPixelSize(attrVal);
 		if (minval == 0) return ;
 		var curStr = _dstNode.get("width");
 		if (curStr != null && curStr.length > 0)
@@ -89,7 +91,7 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 		// TODO: also need to add test for minHeight
 		attrVal = popAttribute(_srcNode, "android:minHeight");
 		if (attrVal == null) return ;
-		var minval = Std.parseInt(attrVal);
+		var minval = _resloader.getDimensionPixelSize(attrVal);
 		if (minval == 0) return ;
 		var curStr = _dstNode.get("height");
 		if (curStr != null && curStr.length > 0)
@@ -100,6 +102,20 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 		_dstNode.set("height", Std.string(minval));
 		
 	}
+
+	private static  var androidPaddingAttributes = ["android:paddingTop", "android:paddingBottom", "android:paddingLeft", "android:paddingRight"];
+	private static  var haxeuiPaddingAttributes = ["paddingTop", "paddingBottom", "paddingLeft", "paddingRight"];
+	public function processPaddingAttributes():Void
+	{
+		for (i in 0...4)
+		{
+			var attrVal = popAttribute(_srcNode, androidPaddingAttributes[i]);
+			if (attrVal == null) continue;
+			var padval = _resloader.getDimensionPixelSize(attrVal);
+			if(padval==0) continue;
+			addHaxeUIStyle(_dstNode, haxeuiPaddingAttributes[i], Std.string(padval));			
+		}
+	}		
 	
 	public function processEnabledAttribute():Void
 	{

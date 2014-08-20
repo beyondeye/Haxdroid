@@ -86,8 +86,7 @@ See android documentation of supported widgets for details about supported widge
 - Layout related
 	- android:layout_width,
 	- android:layout_height
-	- android:minWidth
-	- android:minHeight
+	- android:paddingTop, android:paddingBottom, android:paddingLeft, android:paddingRight
 - Text related
 	- android:text
 	- android:textColor

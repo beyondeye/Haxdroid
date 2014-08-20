@@ -47,6 +47,15 @@ class TestSingleAndroidControls extends TestCase
 		assertTrue(CompareTools.match_ignoreblanks(res,
 		"<vbox percentWidth=\"100\" percentHeight=\"100\"><button text=\"Ciao Mondo!\" width=\"200\" height=\"50\" id=\"myButton\"/></vbox>"));		
 	}
+	public function testSingleButtonPadded()
+	{
+		var androidxml = resloader.getLayout("@layout/onebutton_padded.xml");		
+		var convertedxml = converter.processXml(androidxml);
+		assertTrue(converter.logger.warningCount == 0 && converter.logger.errorCount == 0);
+		var res = convertedxml.toString();
+		assertTrue(CompareTools.match_ignoreblanks(res,
+		"<vbox percentWidth=\"100\" percentHeight=\"100\" style=\"paddingTop: 24;paddingBottom: 26;paddingLeft: 20;paddingRight: 22\"><button text=\"Ciao Mondo!\" percentWidth=\"100\" percentHeight=\"100\" id=\"myButton\"/></vbox>"));
+	}		
 	public function testSingleButton()
 	{
 		var androidxml = resloader.getLayout("@layout/onebutton.xml");		
