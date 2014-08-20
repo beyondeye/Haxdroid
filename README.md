@@ -38,27 +38,27 @@ I will be happy to hear about suggestions and requests and I am open to collabor
 Dario Elyasy
 
 ##Supported Android Resources
-
-- Drawables
-- Layouts
+Look [here](http://developer.android.com/guide/topics/resources/providing-resources.html) for an overview on Android resources 
+- [Drawables](http://developer.android.com/guide/topics/resources/drawable-resource.html):  only bitmaps currently supported
+- [Layouts](http://developer.android.com/guide/topics/resources/layout-resource.html)
 - Values:
-	- Colors
-	- Strings
-	- Dimensions
+	- [Colors](http://developer.android.com/guide/topics/resources/more-resources.html#Color)
+	- [Strings](http://developer.android.com/guide/topics/resources/string-resource.html): only simple strings currently supported
+	- [Dimensions](http://developer.android.com/guide/topics/resources/more-resources.html#Dimension)
 
 ##Supported Android widgets
-- LinearLayout
-- ScrollView
-- ListView
-- Button
-- TextView
-- EditText
-- CheckBox
-- ImageView
+- [LinearLayout](http://developer.android.com/guide/topics/ui/layout/linear.html)
+- [ScrollView] (http://developer.android.com/reference/android/widget/ScrollView.html)
+- [ListView] (http://developer.android.com/guide/topics/ui/layout/listview.html)
+- [Button] (http://developer.android.com/guide/topics/ui/controls/button.html)
+- [TextView] (http://developer.android.com/reference/android/widget/TextView.html)
+- [EditText] (http://developer.android.com/guide/topics/ui/controls/text.html)
+- [CheckBox] (http://developer.android.com/guide/topics/ui/controls/checkbox.html)
+- [ImageView] (http://developer.android.com/reference/android/widget/ImageView.html)
 
 
 ##Supported Android widgets attributes
-
+See android documentation of supported widgets for details about supported widget attributes
 - General
 	- android:id
 	- android:enabled
