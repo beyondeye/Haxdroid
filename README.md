@@ -1,5 +1,5 @@
 #Haxdroid Documentation
-By (Dario Elyasy)[http://il.linkedin.com/in/darioe/], [eye-beyond.com](http://eye-beyond.com)
+By [Dario Elyasy](http://il.linkedin.com/in/darioe/), [eye-beyond.com](http://eye-beyond.com)
 ##The problem
 Haxe is a very powerful tool for cross platform development.But something I felt was missing from the Haxe eco-system was 
 a way to manage assets and GUI of an application as a function of the device and the execution environment. This is actually critical for cross-platform 
