@@ -46,7 +46,14 @@ you can call
 ```haxe
 resloader.androidDeviceConfiguration.setConfigurationForDesktopPC();
 ```
-
+Now you can access directly Android resources with methods of AndroidResourceLoader, like `getLayout()`, `getDrawable()`, `getColor()` and so on, or you can
+use the automatic Android XML layout translation, like this
+```haxe
+		var androidxml = resloader.getLayout("@layout/oneimage.xml");
+		var converter = new AndroidXMLConverter(resloader);
+		var haxeui_xml = converter.processXml(androidxml);
+```
+For more example of usages, look at unit tests.
 
 ##Supported Android Resources
 Look [here](http://developer.android.com/guide/topics/resources/providing-resources.html) for an overview on Android resources 
