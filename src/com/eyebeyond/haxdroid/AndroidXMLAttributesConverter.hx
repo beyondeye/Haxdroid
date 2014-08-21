@@ -11,15 +11,17 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 {
 	private var _srcNode:Xml;
 	private var _dstNode:Xml;
+	private var _dstParentNode:Xml;
 	
 	public function new(resloader:AndroidResourceLoader,logger:IConverterLogger) 
 	{
 		super(resloader, logger);
 	}
-	public function setSourceAndDest(srcNode:Xml, dstNode:Xml ):Void
+	public function setParams(srcNode:Xml, dstNode:Xml,dstParentNode:Xml ):Void
 	{
 		this._srcNode = srcNode;
 		this._dstNode = dstNode;
+		this._dstParentNode = dstParentNode;
 	}
 	
 	public function processCommonWidgetAttributes():Void
@@ -31,6 +33,7 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 		processHeightAndMinHeightAttribute();
 		
 		processPaddingAttributes();
+		processLayoutGravityAttribute();
 		
 		processIdAttribute();
 
@@ -63,15 +66,15 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 		// TODO: also need to add test for minWidth		
 		attrVal = popAttribute(_srcNode, "android:minWidth");
 		if (attrVal == null) return ;
-		var minval = _resloader.getDimensionPixelSize(attrVal);
-		if (minval == 0) return ;
-		var curStr = _dstNode.get("width");
-		if (curStr != null && curStr.length > 0)
-		{
-			var curval = Std.parseInt(curStr);
-			if (curval > minval) minval = curval;
-		}
-		_dstNode.set("width", Std.string(minval));
+		//var minval = _resloader.getDimensionPixelSize(attrVal);
+		//if (minval == 0) return ;
+		//var curStr = _dstNode.get("width");
+		//if (curStr != null && curStr.length > 0)
+		//{
+			//var curval = Std.parseInt(curStr);
+			//if (curval > minval) minval = curval;
+		//}
+		//_dstNode.set("width", Std.string(minval));
 	}
 
 	public function processHeightAndMinHeightAttribute():Void
@@ -91,15 +94,15 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 		// TODO: also need to add test for minHeight
 		attrVal = popAttribute(_srcNode, "android:minHeight");
 		if (attrVal == null) return ;
-		var minval = _resloader.getDimensionPixelSize(attrVal);
-		if (minval == 0) return ;
-		var curStr = _dstNode.get("height");
-		if (curStr != null && curStr.length > 0)
-		{
-			var curval = Std.parseInt(curStr);
-			if (curval > minval) minval = curval;
-		}
-		_dstNode.set("height", Std.string(minval));
+		//var minval = _resloader.getDimensionPixelSize(attrVal);
+		//if (minval == 0) return ;
+		//var curStr = _dstNode.get("height");
+		//if (curStr != null && curStr.length > 0)
+		//{
+			//var curval = Std.parseInt(curStr);
+			//if (curval > minval) minval = curval;
+		//}
+		//_dstNode.set("height", Std.string(minval));
 		
 	}
 
@@ -108,6 +111,7 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 	public function processPaddingAttributes():Void
 	{
 		var defaultPadding:Int = 0;
+		//TODO: there is actually a padding attribute in HaxeUI style that can be set, that it is equivalent to android:padding : use it instead of the mechanism implemented below?
 		var attrVal = popAttribute(_srcNode, "android:padding");
 		if (attrVal != null) 
 		{
@@ -125,6 +129,39 @@ class AndroidXMLAttributesConverter extends AndroidXMLConverterModule
 			addHaxeUIStyle(_dstNode, haxeuiPaddingAttributes[i], Std.string(padval));			
 		}
 	}		
+	public function processLayoutGravityAttribute():Void 
+	{
+		var attrVal =  popAttribute(_srcNode, "android:layout_gravity");
+		if (attrVal == null) return;
+		switch(_dstParentNode.nodeName)
+		{
+			case "vbox":
+				var alignstr = switch(attrVal)
+				{
+					case 'left', 'center', 'right':
+						attrVal;
+					default:
+						_logger.warning('android:layout_gravity for LinearLayout(vertical): unsupported gravity: $attrVal');	
+						null;
+				}
+				if(alignstr!=null)
+					_dstNode.set("horizontalAlign", alignstr);
+			case "hbox":
+				var alignstr = switch(attrVal)
+				{
+					case 'bottom', 'center', 'top':
+						attrVal;
+					default:
+						_logger.warning('android:layout_gravity for LinearLayout(horizontal): unsupported gravity: $attrVal');
+						null;
+				}
+				if(alignstr!=null)
+					_dstNode.set("verticalAlign", alignstr);
+			default:
+				_logger.warning('LayoutGravity: unsupported parent layout: ${_dstParentNode.nodeName}');	
+		}
+
+	}
 	
 	public function processEnabledAttribute():Void
 	{

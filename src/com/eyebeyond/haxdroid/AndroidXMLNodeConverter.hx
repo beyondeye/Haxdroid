@@ -10,49 +10,56 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 {
 
 	private var _attrconverter:AndroidXMLAttributesConverter;
+	private var _srcNode:Xml;
+	private var _dstParentNode:Xml;
 	public function new(resloader:AndroidResourceLoader,logger:IConverterLogger=null) 
 	{
 		if (logger == null) logger = new DefaultConverterLogger();
 		super(resloader, logger);
 		_attrconverter = new AndroidXMLAttributesConverter(resloader, logger);
 	}
-	public function process(node:Xml):Xml
+	public function process(srcNode:Xml,dstParentNode:Xml):Xml
 	{
-	    var res:Xml = null;
+	    var dstNode:Xml = null;
+		_dstParentNode=dstParentNode;
+		_srcNode = srcNode;
 //		node.remove("xmlns:android"); //remove android namespace, it will only complicate parsing
-		var nodeName:String = node.nodeName; //note:  Android XML Layout is case sensitive!
-		res =
-			switch(nodeName)
+		var srcNodeName:String = srcNode.nodeName; //note:  Android XML Layout is case sensitive!
+		dstNode =
+			switch(srcNodeName)
 			{
 				case "LinearLayout":
-					processAndroidLinearLayout(node);
+					processAndroidLinearLayout();
 				case "Button":
-					processAndroidButton(node);
+					processAndroidButton();
 				case "TextView":
-					processAndroidTextView(node);
+					processAndroidTextView();
 				case "EditText":
-					processAndroidEditText(node);
+					processAndroidEditText();
 				case "CheckBox":
-					processAndroidCheckBox(node);	
+					processAndroidCheckBox();	
 				case "ImageView":
-					processAndroidImageView(node);	
+					processAndroidImageView();	
 				case "ScrollView":
-					processAndroidScrollView(node);		
+					processAndroidScrollView();		
 				default:
-					_logger.warning("unsupported android widget: " + node.nodeName);
+					_logger.warning("unsupported android widget: " + _srcNode.nodeName);
 					null;			
 			}
-		if (res != null) _attrconverter.processCommonWidgetAttributes();
-		return res;
+		if (dstNode != null) _attrconverter.processCommonWidgetAttributes();
+		return dstNode;
+	}
+	
+	private function setAttrConverterParams(dstNode:Xml)
+	{
+		_attrconverter.setParams(_srcNode, dstNode,_dstParentNode);
 	}
 	
 
-	
-
-	private function processAndroidEditText( node:Xml ):Xml 
+	private function processAndroidEditText():Xml 
 	{
 		var res:Xml = Xml.createElement("textinput");
-		_attrconverter.setSourceAndDest(node, res);
+		setAttrConverterParams(res);
 		
 		_attrconverter.processCommonTextAttributes();
 		_attrconverter.processAndroidHintAttribute();
@@ -60,10 +67,11 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 	}	
 	
 	
-	private function processAndroidTextView( node:Xml ):Xml 
+
+	private function processAndroidTextView():Xml 
 	{
 		var res:Xml = Xml.createElement("text");
-		_attrconverter.setSourceAndDest(node, res);
+		setAttrConverterParams(res);
 
 		_attrconverter.processCommonTextAttributes();
 		_attrconverter.processAndroidHintAttributeForText();
@@ -72,10 +80,10 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 
 
 	
-	private function processAndroidCheckBox( node:Xml ):Xml 
+	private function processAndroidCheckBox( ):Xml 
 	{
 		var res:Xml = Xml.createElement("checkbox");
-		_attrconverter.setSourceAndDest(node, res);
+		setAttrConverterParams(res);
 
 		_attrconverter.processCommonTextAttributes();
 
@@ -87,36 +95,36 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 		return res;
 	}	
 	
-	private function processAndroidImageView( node:Xml ):Xml 
+	private function processAndroidImageView( ):Xml 
 	{
 		var res:Xml = Xml.createElement("image");
-		_attrconverter.setSourceAndDest(node,res);
+		setAttrConverterParams(res);
 		
 		_attrconverter.processAndroidSrcAttribute();
 		_attrconverter.processAndroidScaleTypeAttribute();
 		return res;
 	}		
-	private function processAndroidScrollView( node:Xml ):Xml 
+	private function processAndroidScrollView( ):Xml 
 	{
 		var res:Xml = Xml.createElement("scrollview");
-		_attrconverter.setSourceAndDest(node,res);
+		setAttrConverterParams(res);
 		
 		return res;
 	}		
 	
-	private function processAndroidButton( node:Xml ):Xml 
+	private function processAndroidButton( ):Xml 
 	{		
 		var res:Xml = Xml.createElement("button");
-		_attrconverter.setSourceAndDest(node,res);
+		setAttrConverterParams(res);
 		
 		_attrconverter.processTextAttribute();
 		return res;		
 	}
 
 	
-	private function processAndroidLinearLayout( node:Xml ):Xml 
+	private function processAndroidLinearLayout( ):Xml 
 	{
-		var or = popAttribute(node,"android:orientation");
+		var or = popAttribute(_srcNode,"android:orientation");
 		var res:Xml = 
 			switch( or)
 			{
@@ -129,7 +137,7 @@ class AndroidXMLNodeConverter extends AndroidXMLConverterModule
 					null;
 			}	
 			
-		_attrconverter.setSourceAndDest(node, res); 
+		setAttrConverterParams(res);
 		// TODO: add here conversion of additional attributes for LinearLayout
 	
 		return res;

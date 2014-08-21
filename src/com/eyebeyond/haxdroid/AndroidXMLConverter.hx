@@ -19,31 +19,39 @@ class AndroidXMLConverter
 	}
 	public function processXml(node:Xml):Xml 
 	{
-		var rootNode = processXmlNode(node.firstElement());
+		var rootNode = processXmlNode(node.firstElement(),null);
 		if (rootNode == null) return null;
 		var res = Xml.createDocument();
 		res.addChild(rootNode); 
 		return res;
 	}	
 
-	private function processXmlNode(node:Xml):Xml
+	/**
+	 * 
+	 * @param	srcNode: node to convert
+	 * @param	dstParentNode: converted parent of srcNode
+	 * @return converted srcNode
+	 */
+	private function processXmlNode(srcNode:Xml,dstParentNode:Xml):Xml
 	{
-		if (node == null) {
+		if (srcNode == null) {
 			return null;
 		}		
-		
-		var result:Xml = _nodeConverter.process(node);
-		if (result == null) 
+		//NOTE: need to pass dstParentNode because there are some conversion operations
+		//      that depend from the context of which is the parent node, and
+		//      what are its attributes
+		var dstNode:Xml = _nodeConverter.process(srcNode,dstParentNode);
+		if (dstNode == null) 
 		{
-			logger.warning("Could not find processor for '" + node.nodeName + "'");
+			logger.warning("Could not find processor for '" + srcNode.nodeName + "'");
 		}
 		
-		for (child in node.elements())
+		for (srcChildNode in srcNode.elements())
 		{
-			var childResult = processXmlNode(child);
-			result.addChild(childResult);
+			var dstChildNode = processXmlNode(srcChildNode,dstNode);
+			dstNode.addChild(dstChildNode);
 		}
-		return result;
+		return dstNode;
 	}
 	
 	

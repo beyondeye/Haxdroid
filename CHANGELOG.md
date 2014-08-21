@@ -28,7 +28,12 @@ First release:
 - Layout related
 	- android:layout_width
 	- android:layout_height
-	- android:paddingTop, android:paddingBottom, android:paddingLeft, android:paddingRight	
+	- android:padding
+	- android:paddingTop
+	- android:paddingBottom
+	- android:paddingLeft
+	- android:paddingRight
+	- android:layout_gravity
 - Text related
 	- android:text
 	- android:textColor
@@ -44,5 +49,6 @@ First release:
 	- android:checked
 
 ##Known Issues
-	
+HaxeUI does not currently support separate "autoSize" for width and height of a widget. Take this into consideration when using  android:layout_width="wrap_content" 
+or android:layout_height="wrap_content" 
 
